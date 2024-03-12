@@ -7,7 +7,7 @@ import { Model } from 'mongoose';
 import { Comment } from '../database/comment.model';
 import { COMMENT_MODEL, POST_MODEL } from '../database/database.constants';
 import { Post } from '../database/post.model';
-import { CreatePostDto } from './create-post.dto';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Injectable()
 export class PostDataInitializerService
@@ -34,8 +34,8 @@ export class PostDataInitializerService
 
   async onModuleInit(): Promise<void> {
     console.log('(PostModule) is initialized...');
-    await this.postModel.deleteMany({});
-    await this.commentModel.deleteMany({});
-    await this.postModel.insertMany(this.data).then((r) => console.log(r));
+    // await this.postModel.deleteMany({});
+    // await this.commentModel.deleteMany({});
+    // await this.postModel.insertMany(this.data).then((r) => console.log(r));
   }
 }

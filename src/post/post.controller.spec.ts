@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { lastValueFrom, Observable, of } from 'rxjs';
 import { anyNumber, anyString, instance, mock, verify, when } from 'ts-mockito';
 import { Post } from '../database/post.model';
-import { CreatePostDto } from './create-post.dto';
+import { CreatePostDto } from './dto/create-post.dto';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
 import { PostServiceStub } from './post.service.stub';

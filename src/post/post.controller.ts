@@ -23,8 +23,8 @@ import { RolesGuard } from '../auth/guard/roles.guard';
 import { ParseObjectIdPipe } from '../shared/pipe/parse-object-id.pipe';
 import { Comment } from '../database/comment.model';
 import { Post as BlogPost } from '../database/post.model';
-import { CreateCommentDto } from './create-comment.dto';
-import { CreatePostDto } from './create-post.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { CreatePostDto } from './dto/create-post.dto';
 import { PostService } from './post.service';
 import { UpdatePostDto } from './update-post.dto';
 

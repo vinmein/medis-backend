@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { EMPTY, from, Observable, of } from 'rxjs';
 import { mergeMap, map, throwIfEmpty } from 'rxjs/operators';
@@ -6,12 +6,14 @@ import { UserService } from '../user/user.service';
 import { AccessToken } from './interface/access-token.interface';
 import { JwtPayload } from './interface/jwt-payload.interface';
 import { UserPrincipal } from './interface/user-principal.interface';
+import { AMPLIFY_CONNECTION } from 'amplify/amplify.constants';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    @Inject(AMPLIFY_CONNECTION) private readonly amplify: any
   ) { }
 
   validateUser(username: string, pass: string): Observable<UserPrincipal> {
@@ -59,5 +61,15 @@ export class AuthService {
         return { access_token };
       }),
     );
+  }
+
+  async register(): Promise<Observable<any>>{
+    const amplifyInstance = this.amplify();
+    
+    const signUp = await amplifyInstance.registerUser({
+      email: "dinesh.drad@gmail.com"
+    })
+    console.log(signUp)
+    return signUp;
   }
 }

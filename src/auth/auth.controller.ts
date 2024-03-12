@@ -23,4 +23,18 @@ export class AuthController {
         })
       );
   }
+
+  // @UseGuards(LocalAuthGuard)
+  @Post('register')
+  async register(@Res() res: Response): Promise<Observable<Response>> {
+    return (await this.authService.register())
+      .pipe(
+        map(token => {
+          return res
+            .header('Authorization', 'Bearer ' + token.access_token)
+            .json(token)
+            .send()
+        })
+      );
+  }
 }

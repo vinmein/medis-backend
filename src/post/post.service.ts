@@ -7,8 +7,8 @@ import { AuthenticatedRequest } from '../auth/interface/authenticated-request.in
 import { Comment } from '../database/comment.model';
 import { COMMENT_MODEL, POST_MODEL } from '../database/database.constants';
 import { Post } from '../database/post.model';
-import { CreateCommentDto } from './create-comment.dto';
-import { CreatePostDto } from './create-post.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './update-post.dto';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -76,7 +76,7 @@ export class PostService {
 
   deleteById(id: string): Observable<Post> {
     return from(this.postModel.findOneAndDelete({ _id: id }).exec()).pipe(
-      mergeMap((p) => (p ? of(p.value) : EMPTY)),
+      mergeMap((p) => (p ? of(p) : EMPTY)),
       throwIfEmpty(() => new NotFoundException(`post:$id was not found`)),
     );
     // const filter = { _id: id };

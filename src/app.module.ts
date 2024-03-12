@@ -8,16 +8,20 @@ import { PostModule } from './post/post.module';
 import { SendgridModule } from './sendgrid/sendgrid.module';
 import { UserModule } from './user/user.module';
 import { LoggerModule } from './logger/logger.module';
+import { ProfileModule } from './profile/profile.module';
+import { AmplifyModule } from 'amplify/amplify.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ ignoreEnvFile: true }),
+    ConfigModule.forRoot({}),
     DatabaseModule,
     PostModule,
     AuthModule,
     UserModule,
     SendgridModule,
     LoggerModule.forRoot(),
+    ProfileModule,
+    AmplifyModule
   ],
   controllers: [AppController],
   providers: [AppService],

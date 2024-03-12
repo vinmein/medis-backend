@@ -8,11 +8,13 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import jwtConfig from '../config/jwt.config';
 import { AuthController } from './auth.controller';
+import { AmplifyModule } from 'amplify/amplify.module';
 
 @Module({
   imports: [
     ConfigModule.forFeature(jwtConfig),
     UserModule,
+    AmplifyModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule.forFeature(jwtConfig)],

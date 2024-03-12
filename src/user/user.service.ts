@@ -6,6 +6,7 @@ import { USER_MODEL } from '../database/database.constants';
 import { User, UserModel } from '../database/user.model';
 import { SendgridService } from '../sendgrid/sendgrid.service';
 import { RegisterDto } from './register.dto';
+import { AMPLIFY_CONNECTION } from 'amplify/amplify.constants';
 
 @Injectable()
 export class UserService {
@@ -31,7 +32,7 @@ export class UserService {
     );
   }
 
-  register(data: RegisterDto): Observable<User> {
+   register(data: RegisterDto): Observable<User> {
     // Simply here we can send a verification email to the new registered user
     // by calling SendGrid directly.
     //
@@ -64,10 +65,13 @@ export class UserService {
     //     error: error => console.log(`${error}`)
     //   });
 
+
     const created = this.userModel.create({
       ...data,
       roles: [RoleType.USER],
     });
+
+    console.log(created)
 
     return from(created);
 
