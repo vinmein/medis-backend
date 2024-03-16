@@ -8,7 +8,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import jwtConfig from '../config/jwt.config';
 import { AuthController } from './auth.controller';
-import { AmplifyModule } from 'amplify/amplify.module';
+import { AmplifyModule } from 'cognito/cognito.module';
 
 @Module({
   imports: [

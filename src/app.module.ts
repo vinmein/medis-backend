@@ -9,7 +9,7 @@ import { SendgridModule } from './sendgrid/sendgrid.module';
 import { UserModule } from './user/user.module';
 import { LoggerModule } from './logger/logger.module';
 import { ProfileModule } from './profile/profile.module';
-import { AmplifyModule } from 'amplify/amplify.module';
+import { AmplifyModule } from 'cognito/cognito.module';
 
 @Module({
   imports: [

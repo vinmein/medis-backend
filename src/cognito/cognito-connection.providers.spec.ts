@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AmplifyConnectionProviders } from './amplify-connection.providers';
+import { AmplifyConnectionProviders } from './cognito-connection.providers';
 
 describe('Amplify', () => {
   // let provider: AmplifyConnectionProviders;

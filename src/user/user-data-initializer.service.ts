@@ -31,8 +31,8 @@ export class UserDataInitializerService
     };
     await Promise.all(
       [
-        this.userModel.create(user),
-        this.userModel.create(admin)
+        // this.userModel.create(user),
+        // this.userModel.create(admin)
       ]
     ).then(
       data => console.log(data)

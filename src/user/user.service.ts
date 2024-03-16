@@ -6,7 +6,7 @@ import { USER_MODEL } from '../database/database.constants';
 import { User, UserModel } from '../database/user.model';
 import { SendgridService } from '../sendgrid/sendgrid.service';
 import { RegisterDto } from './register.dto';
-import { AMPLIFY_CONNECTION } from 'amplify/amplify.constants';
+import { AMPLIFY_CONNECTION } from 'cognito/cognito.constants';
 
 @Injectable()
 export class UserService {

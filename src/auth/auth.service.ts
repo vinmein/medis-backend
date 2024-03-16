@@ -6,15 +6,17 @@ import { UserService } from '../user/user.service';
 import { AccessToken } from './interface/access-token.interface';
 import { JwtPayload } from './interface/jwt-payload.interface';
 import { UserPrincipal } from './interface/user-principal.interface';
-import { AMPLIFY_CONNECTION } from 'amplify/amplify.constants';
+import { AMPLIFY_CONNECTION } from 'cognito/cognito.constants';
+import { AttributePrincipal } from './interface/attribute-principal.interface';
+import { VerifyRequest } from './interface/verify-request.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    @Inject(AMPLIFY_CONNECTION) private readonly amplify: any
-  ) { }
+    @Inject(AMPLIFY_CONNECTION) private readonly amplify: any,
+  ) {}
 
   validateUser(username: string, pass: string): Observable<UserPrincipal> {
     return this.userService.findByUsername(username).pipe(
@@ -25,20 +27,26 @@ export class AuthService {
       // Concise info could be considered for security.
       // Detailed info will be helpful for crackers.
       // throwIfEmpty(() => new NotFoundException(`username:${username} was not found`)),
-      throwIfEmpty(() => new UnauthorizedException(`username or password is not matched`)),
+      throwIfEmpty(
+        () => new UnauthorizedException(`username or password is not matched`),
+      ),
 
       mergeMap((user) => {
         const { _id, password, username, email, roles } = user;
-        return user.comparePassword(pass).pipe(map(m => {
-          if (m) {
-            return { id: _id, username, email, roles } as UserPrincipal;
-          }else {
-            // The same reason above.
-            //throw new UnauthorizedException('password was not matched.')
-            throw new UnauthorizedException('username or password is not matched')
-          }
-        }))
-      })
+        return user.comparePassword(pass).pipe(
+          map((m) => {
+            if (m) {
+              return { id: _id, username, email, roles } as UserPrincipal;
+            } else {
+              // The same reason above.
+              //throw new UnauthorizedException('password was not matched.')
+              throw new UnauthorizedException(
+                'username or password is not matched',
+              );
+            }
+          }),
+        );
+      }),
     );
   }
 
@@ -63,13 +71,37 @@ export class AuthService {
     );
   }
 
-  async register(): Promise<Observable<any>>{
+   register(
+    email: string,
+    attributes: AttributePrincipal,
+  ): Observable<any> {
     const amplifyInstance = this.amplify();
-    
-    const signUp = await amplifyInstance.registerUser({
-      email: "dinesh.drad@gmail.com"
-    })
-    console.log(signUp)
-    return signUp;
+
+    const signUp = amplifyInstance.registerUser(email, attributes);
+    return from(signUp).pipe(
+      map((response) => {
+        return response;
+      }),
+    );
+  }
+
+  requestOtp(email: string): Observable<any> {
+    const amplifyInstance = this.amplify();
+    const response = amplifyInstance.requestOtp(email);
+    return from(response).pipe(
+      map((response) => {
+        return response;
+      }),
+    );
+  }
+
+  verifyOtp(payload: VerifyRequest): Observable<any> {
+    const amplifyInstance = this.amplify();
+    const response = amplifyInstance.verifyOtp(payload);
+    return from(response).pipe(
+      map((response) => {
+        return response;
+      }),
+    );
   }
 }
