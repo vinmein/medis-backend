@@ -1,13 +1,15 @@
 import { Connection } from 'mongoose';
-import { Comment, createCommentModel } from './comment.model';
+import { Comment, createCommentModel } from './models/comment.model';
 import {
   COMMENT_MODEL,
   DATABASE_CONNECTION,
   POST_MODEL,
+  PROFILE_MODEL,
   USER_MODEL,
 } from './database.constants';
-import { Post, createPostModel } from './post.model';
-import { createUserModel } from './user.model';
+import { Post, createPostModel } from './models/post.model';
+import { createUserModel } from './models/user.model';
+import { createProfileModel } from './models/profile.model';
 
 export const databaseModelsProviders = [
   {
@@ -23,6 +25,11 @@ export const databaseModelsProviders = [
   {
     provide: USER_MODEL,
     useFactory: (connection: Connection) => createUserModel(connection),
+    inject: [DATABASE_CONNECTION],
+  },
+  {
+    provide: PROFILE_MODEL,
+    useFactory: (connection: Connection) => createProfileModel(connection),
     inject: [DATABASE_CONNECTION],
   },
 ];

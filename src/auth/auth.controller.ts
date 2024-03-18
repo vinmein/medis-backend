@@ -28,9 +28,9 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Req() req: RegisterRequest, @Res() res: Response): Promise<Observable<Response>> {
+  async register(@Body() req: RegisterRequest, @Res() res: Response): Promise<Observable<Response>> {
     try{
-    const response = await this.authService.register(req.body.email, req.body.attributes);
+    const response = await this.authService.register(req.email, req.attributes, req.group);
     return (response)
       .pipe(
         map(token => {

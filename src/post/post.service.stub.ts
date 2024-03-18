@@ -2,9 +2,9 @@ import { of, Observable } from 'rxjs';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './update-post.dto';
 import { PostService } from './post.service';
-import { Post } from '../database/post.model';
+import { Post } from '../database/models/post.model';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { Comment } from '../database/comment.model';
+import { Comment } from '../database/models/comment.model';
 
 // To unite the method signature of the mocked PostServiceStub and PostService,
 // use `Pick<T, key of T>` instead of writing an extra interface.

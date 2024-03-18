@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { VerifyRequest } from 'auth/interface/verify-request.interface';
 import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider';
-// AWS.config.update({ region: 'ap-southeast-1' });
+import { USER } from './cognito.constants';
 
 @Injectable()
 export class CognitoService {
@@ -28,7 +28,11 @@ export class CognitoService {
     // });
   }
 
-  async registerUser(email: string, attributes: any): Promise<any> {
+  async registerUser(
+    email: string,
+    attributes: any,
+    group: string,
+  ): Promise<CognitoUser> {
     const attributeList = [];
     console.log(email);
     if (attributes) {
@@ -63,7 +67,26 @@ export class CognitoService {
               );
             }
           } else {
-            return resolve(response);
+            const addToUserGroup = {
+              GroupName: USER,
+              Username: email,
+              UserPoolId: this.userPoolId,
+            };
+            this.cognito.adminAddUserToGroup(
+              addToUserGroup,
+              (err, response) => {},
+            );
+            const addToGroup = {
+              GroupName: group,
+              Username: email,
+              UserPoolId: this.userPoolId,
+            };
+            this.cognito.adminAddUserToGroup(addToGroup, (err, response) => {});
+            const userObj: CognitoUser = {
+               UserConfirmed: response.UserConfirmed,
+               UserSub: response.UserSub
+            };
+            return resolve(userObj);
           }
         },
       );

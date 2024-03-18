@@ -10,6 +10,13 @@ import { UserModule } from './user/user.module';
 import { LoggerModule } from './logger/logger.module';
 import { ProfileModule } from './profile/profile.module';
 import { AmplifyModule } from 'cognito/cognito.module';
+import { ProfessionModule } from './profession/profession.module';
+import { OrganisationModule } from './organisation/organisation.module';
+import { JobModule } from './job/job.module';
+import { PaymentModule } from './payment/payment.module';
+import { ReceiptModule } from './receipt/receipt.module';
+import { ApplicationModule } from './application/application.module';
+import { JobpostModule } from './jobpost/jobpost.module';
 
 @Module({
   imports: [
@@ -21,7 +28,14 @@ import { AmplifyModule } from 'cognito/cognito.module';
     SendgridModule,
     LoggerModule.forRoot(),
     ProfileModule,
-    AmplifyModule
+    AmplifyModule,
+    ProfessionModule,
+    OrganisationModule,
+    JobModule,
+    PaymentModule,
+    ReceiptModule,
+    ApplicationModule,
+    JobpostModule
   ],
   controllers: [AppController],
   providers: [AppService],

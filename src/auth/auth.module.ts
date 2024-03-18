@@ -9,11 +9,13 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import jwtConfig from '../config/jwt.config';
 import { AuthController } from './auth.controller';
 import { AmplifyModule } from 'cognito/cognito.module';
+import { ProfileModule } from 'profile/profile.module';
 
 @Module({
   imports: [
     ConfigModule.forFeature(jwtConfig),
     UserModule,
+    ProfileModule,
     AmplifyModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({

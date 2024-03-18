@@ -6,15 +6,19 @@ import { UserService } from '../user/user.service';
 import { AccessToken } from './interface/access-token.interface';
 import { JwtPayload } from './interface/jwt-payload.interface';
 import { UserPrincipal } from './interface/user-principal.interface';
-import { AMPLIFY_CONNECTION } from 'cognito/cognito.constants';
+import { AMPLIFY_CONNECTION, USER } from 'cognito/cognito.constants';
 import { AttributePrincipal } from './interface/attribute-principal.interface';
 import { VerifyRequest } from './interface/verify-request.interface';
+import { ProfileService } from 'profile/profile.service';
+import { CreateProfileRequest } from 'profile/interface/create-profile-request.interface';
+import { CreateProfileDto } from 'profile/dto/create-profile.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private profileService: ProfileService,
     @Inject(AMPLIFY_CONNECTION) private readonly amplify: any,
   ) {}
 
@@ -71,15 +75,27 @@ export class AuthService {
     );
   }
 
-   register(
+  register(
     email: string,
     attributes: AttributePrincipal,
+    group: string,
   ): Observable<any> {
     const amplifyInstance = this.amplify();
 
-    const signUp = amplifyInstance.registerUser(email, attributes);
+    const signUp = amplifyInstance.registerUser(email, attributes, group);
     return from(signUp).pipe(
-      map((response) => {
+      map((response: CognitoUser) => {
+        const payload: CreateProfileDto = {
+          userId: response.UserSub,
+          firstName: attributes.given_name,
+          lastName: attributes.family_name,
+          emailId: email,
+          role: [group, USER],
+          type: 'doctor',
+          dob: '',
+          mobileNumber: ''
+        };
+        this.profileService.create(payload);
         return response;
       }),
     );

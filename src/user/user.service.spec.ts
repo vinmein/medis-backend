@@ -3,7 +3,7 @@ import { Model, FilterQuery } from 'mongoose';
 import { lastValueFrom, of } from 'rxjs';
 
 import { USER_MODEL } from '../database/database.constants';
-import { User } from '../database/user.model';
+import { User } from '../database/models/user.model';
 import { SendgridService } from '../sendgrid/sendgrid.service';
 import { RoleType } from '../shared/enum/role-type.enum';
 import { UserService } from './user.service';

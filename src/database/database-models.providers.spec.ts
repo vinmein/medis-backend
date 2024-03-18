@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
-import { Comment, CommentModel } from './comment.model';
+import { Comment, CommentModel } from './models/comment.model';
 import {
   COMMENT_MODEL,
   DATABASE_CONNECTION,
@@ -8,8 +8,8 @@ import {
   USER_MODEL,
 } from './database.constants';
 import { databaseModelsProviders } from './database-models.providers';
-import { Post, PostModel } from './post.model';
-import { User, UserModel } from './user.model';
+import { Post, PostModel } from './models/post.model';
+import { User, UserModel } from './models/user.model';
 
 describe('DatabaseModelsProviders', () => {
   let conn: any;

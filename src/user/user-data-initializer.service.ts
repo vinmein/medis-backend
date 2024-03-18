@@ -6,7 +6,7 @@ import {
 import { Model } from 'mongoose';
 import { USER_MODEL } from '../database/database.constants';
 import { RoleType } from '../shared/enum/role-type.enum';
-import { User } from '../database/user.model';
+import { User } from '../database/models/user.model';
 
 @Injectable()
 export class UserDataInitializerService

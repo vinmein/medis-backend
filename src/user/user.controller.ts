@@ -1,5 +1,5 @@
 import { Controller, DefaultValuePipe, Get, Param, Query } from '@nestjs/common';
-import { User } from 'database/user.model';
+import { User } from 'database/models/user.model';
 import { Observable } from 'rxjs';
 import { ParseObjectIdPipe } from '../shared/pipe/parse-object-id.pipe';
 import { UserService } from './user.service';

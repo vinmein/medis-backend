@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RegisterController } from './register.controller';
 import { UserService } from './user.service';
 import { of, lastValueFrom } from 'rxjs';
-import { User } from 'database/user.model';
+import { User } from 'database/models/user.model';
 import { RegisterDto } from './register.dto';
 
 describe('Register Controller', () => {

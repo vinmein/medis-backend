@@ -3,5 +3,6 @@ import { AttributePrincipal } from './attribute-principal.interface';
 
 export interface RegisterRequest extends Request {
   readonly email: string;
-  readonly attributes: AttributePrincipal
+  readonly attributes: AttributePrincipal;
+  readonly group: string;
 }

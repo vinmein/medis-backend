@@ -3,9 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Model } from 'mongoose';
 import { lastValueFrom } from 'rxjs';
 
-import { Comment } from '../database/comment.model';
+import { Comment } from '../database/models/comment.model';
 import { COMMENT_MODEL, POST_MODEL } from '../database/database.constants';
-import { Post } from '../database/post.model';
+import { Post } from '../database/models/post.model';
 import { PostService } from './post.service';
 
 describe('PostService', () => {

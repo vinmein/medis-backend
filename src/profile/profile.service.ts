@@ -1,26 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { PROFILE_MODEL } from 'database/database.constants';
+import { ProfileModel } from 'database/models/profile.model';
 
 @Injectable()
 export class ProfileService {
+
+  constructor(
+    @Inject(PROFILE_MODEL) private profileModel: ProfileModel,
+  ) {}
+
   create(createProfileDto: CreateProfileDto) {
-    return 'This action adds a new profile';
+    const created = this.profileModel.create({
+      ...createProfileDto,
+    });
+    return created;
   }
 
   findAll() {
-    return `This action returns all profile`;
+   return this.profileModel.find({})
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
+  findOne(id: string) {
+    return this.profileModel.findById(id)
   }
 
-  update(id: number, updateProfileDto: UpdateProfileDto) {
-    return `This action updates a #${id} profile`;
+  update(id: string, updateProfileDto: UpdateProfileDto) {
+    return this.profileModel.updateOne({_id:id}, updateProfileDto)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+  remove(id: string) {
+    return this.profileModel.deleteOne({id})
   }
 }
