@@ -17,10 +17,15 @@ import { PaymentModule } from './payment/payment.module';
 import { ReceiptModule } from './receipt/receipt.module';
 import { ApplicationModule } from './application/application.module';
 import { JobpostModule } from './jobpost/jobpost.module';
+import { AccountConfigModule } from './account-config/account-config.module';
+import amplifyConfig from 'config/amplify.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({}),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [amplifyConfig], // Load the configuration
+    }),
     DatabaseModule,
     PostModule,
     AuthModule,
@@ -35,7 +40,8 @@ import { JobpostModule } from './jobpost/jobpost.module';
     PaymentModule,
     ReceiptModule,
     ApplicationModule,
-    JobpostModule
+    JobpostModule,
+    AccountConfigModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,6 +3,8 @@ const AWS = require('aws-sdk');
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { VerifyRequest } from 'auth/interface/verify-request.interface';
 import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CognitoUser as CUser, AuthenticationDetails, CognitoUserSession, ICognitoUserData, CognitoUserPool, CognitoRefreshToken } from 'amazon-cognito-identity-js';
+
 import { USER } from './cognito.constants';
 
 @Injectable()
@@ -147,4 +149,63 @@ export class CognitoService {
       });
     });
   }
+
+  async refreshTokenv2(refreshToken: string): Promise<any> {
+   
+    const userToken = {
+      REFRESH_TOKEN: refreshToken,
+    }
+    const params : CognitoIdentityServiceProvider.AdminInitiateAuthRequest= {
+      AuthFlow: 'REFRESH_TOKEN_AUTH',
+      ClientId: this.clientId,
+      UserPoolId: this.userPoolId,
+      AuthParameters :userToken,
+    };
+    return new Promise(async (resolve, reject) => {
+      this.cognito.adminInitiateAuth(params, (err, response) => {
+        if (err) {
+          if (err.name == 'NotAuthorizedException') {
+            return reject(
+              new HttpException(
+                'NotAuthorizedException: Invalid session for the user.',
+                HttpStatus.BAD_REQUEST,
+              ),
+            );
+          } else {
+            return reject(
+              new HttpException('Bad Request', HttpStatus.BAD_REQUEST),
+            );
+          }
+        } else {
+          return resolve(response);
+        }
+      });
+    });
+  }
+
+
+  async refreshToken(userName: string, refreshToken: string): Promise<any> {
+    const userPool = new CognitoUserPool({
+      UserPoolId: this.userPoolId,
+      ClientId: this.clientId,
+    });
+
+    const userData = {
+      Username: userName,
+      Pool: userPool,
+    };
+
+    
+    const cognitoUser = new CUser(userData);
+    const token = new CognitoRefreshToken({ RefreshToken: refreshToken });
+    return new Promise(async (resolve, reject) => {
+      cognitoUser.refreshSession(token, (err, result) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(result);
+      });
+    });
+  }
 }
+

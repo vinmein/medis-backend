@@ -8,6 +8,7 @@ import { AuthenticatedRequest } from './interface/authenticated-request.interfac
 import { RegisterRequest } from './interface/register-request.interface';
 import { RequestOtp } from './interface/request-otp.interface';
 import { VerifyRequest } from './interface/verify-request.interface';
+import { RefreshTokenRequest } from './interface/refresh-token-request.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -68,6 +69,25 @@ export class AuthController {
   async verifyOtp(@Body() req: VerifyRequest, @Res() res: Response): Promise<Observable<Response>> {
     try{
     const response = await this.authService.verifyOtp(req);
+    console.log(response)
+    return (response)
+      .pipe(
+        map(token => {
+          return res
+            .header('Authorization', 'Bearer ' + token.access_token)
+            .json(token)
+            .send()
+        })
+      );
+    } catch(e){
+      throw e;
+    }
+  }
+
+  @Post('refreshToken')
+  async refreshToken(@Body() req: RefreshTokenRequest, @Res() res: Response): Promise<Observable<Response>> {
+    try{
+    const response = await this.authService.refreshToken(req.username, req.refreshToken);
     console.log(response)
     return (response)
       .pipe(

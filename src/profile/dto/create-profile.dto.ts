@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, MaxLength, MinLength } from "class-validator";
 
 export class CreateProfileDto {
-
+  
     @IsNotEmpty()
     readonly userId: string;
 

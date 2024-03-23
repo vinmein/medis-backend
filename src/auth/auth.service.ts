@@ -81,7 +81,6 @@ export class AuthService {
     group: string,
   ): Observable<any> {
     const amplifyInstance = this.amplify();
-
     const signUp = amplifyInstance.registerUser(email, attributes, group);
     return from(signUp).pipe(
       map((response: CognitoUser) => {
@@ -91,7 +90,7 @@ export class AuthService {
           lastName: attributes.family_name,
           emailId: email,
           role: [group, USER],
-          type: 'doctor',
+          type: group,
           dob: '',
           mobileNumber: ''
         };
@@ -114,6 +113,16 @@ export class AuthService {
   verifyOtp(payload: VerifyRequest): Observable<any> {
     const amplifyInstance = this.amplify();
     const response = amplifyInstance.verifyOtp(payload);
+    return from(response).pipe(
+      map((response) => {
+        return response;
+      }),
+    );
+  }
+
+  refreshToken(username: string, token: string): Observable<any> {
+    const amplifyInstance = this.amplify();
+    const response = amplifyInstance.refreshToken(username, token);
     return from(response).pipe(
       map((response) => {
         return response;

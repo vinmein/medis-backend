@@ -3,3 +3,4 @@ export const POST_MODEL = 'POST_MODEL';
 export const USER_MODEL = 'USER_MODEL';
 export const COMMENT_MODEL = 'COMMENT_MODEL';
 export const PROFILE_MODEL = 'PROFILE_MODEL';
+export const ACCOUNT_CONFIG_MODEL = 'ACCOUNT_CONFIG_MODEL';

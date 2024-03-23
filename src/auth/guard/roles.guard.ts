@@ -11,6 +11,7 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+
     const roles = this.reflector.get<RoleType[]>(
       HAS_ROLES_KEY,
       context.getHandler(),
@@ -22,6 +23,7 @@ export class RolesGuard implements CanActivate {
     const {
       user,
     } = context.switchToHttp().getRequest() as AuthenticatedRequest;
-    return user.roles && user.roles.some((r) => roles.includes(r));
+    const cognitoRoles = user['cognito:groups']
+    return cognitoRoles && cognitoRoles.some((r) => roles.includes(r));
   }
 }
