@@ -18,6 +18,11 @@ import { ReceiptModule } from './receipt/receipt.module';
 import { ApplicationModule } from './application/application.module';
 import { JobpostModule } from './jobpost/jobpost.module';
 import { AccountConfigModule } from './account-config/account-config.module';
+import { AdvertisementsModule } from './advertisement/advertisements.module';
+import { FeedModule } from './feed/feed.module';
+import { StorageModule } from './storage/storage.module';
+import { S3Module } from './s3/s3.module';
+import { UserReviewModule } from './user-review/user-review.module';
 import amplifyConfig from 'config/amplify.config';
 
 @Module({
@@ -41,7 +46,12 @@ import amplifyConfig from 'config/amplify.config';
     ReceiptModule,
     ApplicationModule,
     JobpostModule,
-    AccountConfigModule
+    AccountConfigModule,
+    AdvertisementsModule,
+    FeedModule,
+    StorageModule,
+    S3Module,
+    UserReviewModule
   ],
   controllers: [AppController],
   providers: [AppService],

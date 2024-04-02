@@ -6,6 +6,7 @@ import { Profile } from './profile.model';
 interface Qualification extends Document {
   readonly qualificationId: string;
   readonly profile?: Partial<Profile>;
+  readonly userId: string;
   readonly education: string;
   readonly yearOfPassedOut: string;
   readonly councilNumber: string;
@@ -21,6 +22,10 @@ const QualificationSchema = new Schema<Qualification>(
       type: String,
       required: true,
       default: nanoid(),
+    },
+    userId: {
+      type: String,
+      required: true,
     },
     profile: {
       type: SchemaTypes.ObjectId,

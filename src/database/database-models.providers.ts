@@ -6,12 +6,14 @@ import {
   DATABASE_CONNECTION,
   POST_MODEL,
   PROFILE_MODEL,
+  STORAGE_CONFIG_MODEL,
   USER_MODEL,
 } from './database.constants';
 import { Post, createPostModel } from './models/post.model';
 import { createUserModel } from './models/user.model';
 import { createProfileModel } from './models/profile.model';
 import { accountConfigModel } from './models/account-config.model';
+import { createStorageModel } from './models/storage.model';
 
 export const databaseModelsProviders = [
   {
@@ -37,6 +39,11 @@ export const databaseModelsProviders = [
   {
     provide: ACCOUNT_CONFIG_MODEL,
     useFactory: (connection: Connection) => accountConfigModel(connection),
+    inject: [DATABASE_CONNECTION],
+  },
+  {
+    provide: STORAGE_CONFIG_MODEL,
+    useFactory: (connection: Connection) => createStorageModel(connection),
     inject: [DATABASE_CONNECTION],
   },
 ];
