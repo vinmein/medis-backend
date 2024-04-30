@@ -10,8 +10,8 @@ interface Qualification extends Document {
   readonly education: string;
   readonly yearOfPassedOut: string;
   readonly councilNumber: string;
-  readonly createdBy?: Partial<User>;
-  readonly updatedBy?: Partial<User>;
+  readonly createdBy?: string;
+  readonly updatedBy?: string;
 }
 
 type QualificationModel = Model<Qualification>;

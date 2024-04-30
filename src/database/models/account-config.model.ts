@@ -1,6 +1,9 @@
 import { Connection, Document, Model, Schema, SchemaTypes } from 'mongoose';
 import { User } from './user.model';
 import { init } from '@paralleldrive/cuid2';
+import { SubscriptionStatus } from 'shared/enum/subscription-status';
+import { Duration } from 'shared/enum/duration.enum';
+import { DEFAULT_CREDITS } from 'database/database.constants';
 
 const createId = init({
   // A custom random function with the same API as Math.random.
@@ -14,13 +17,14 @@ const createId = init({
 });
 
 interface Subscribed extends Document {
-  readonly status: boolean;
+  readonly status: SubscriptionStatus;
 }
 
 interface Credits extends Document {
-    readonly value: number;
-    readonly duration: string;
-  }
+  readonly defaultValue: number;
+  readonly duration: Duration;
+  readonly available: number;
+}
 
 interface AccountConfig extends Document {
   readonly configId: string;
@@ -37,30 +41,35 @@ const AccountConfigScheme = new Schema<AccountConfig>(
     configId: {
       type: String,
       required: true,
-      default:  createId()
+      default: createId(),
     },
     userId: {
       type: String,
       required: true,
     },
     profileId: {
-        type: String,
+      type: String,
     },
     isSubscribed: {
-      status:{
-        type: Boolean,
-        default: false,
-      }
+      status: {
+        type: String,
+        enum: SubscriptionStatus,
+      },
     },
-    credits:{
-        value: {
-            type: Number,
-            default: 30,
-        },
-        duration: {
-            type: String,
-            default: "MONTHLY",
-        },
+    credits: {
+      defaultValue: {
+        type: Number,
+        default: DEFAULT_CREDITS,
+      },
+      duration: {
+        type: String,
+        default: Duration.MONTHLY,
+        enum: Duration,
+      },
+      available: {
+        type: Number,
+        required: true,
+      },
     },
   },
   { timestamps: true },
@@ -68,6 +77,11 @@ const AccountConfigScheme = new Schema<AccountConfig>(
 
 const accountConfigModel: (conn: Connection) => AccountConfigModel = (
   conn: Connection,
-) => conn.model<AccountConfig>('AccountConfig', AccountConfigScheme, 'accountconfigs');
+) =>
+  conn.model<AccountConfig>(
+    'AccountConfig',
+    AccountConfigScheme,
+    'accountconfigs',
+  );
 
 export { AccountConfig, AccountConfigModel, accountConfigModel };

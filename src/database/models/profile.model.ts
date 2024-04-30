@@ -1,7 +1,8 @@
 import { Connection, Document, Model, Schema, SchemaTypes } from 'mongoose';
 import { User } from './user.model';
 import { init } from '@paralleldrive/cuid2';
-import { UserType } from 'shared/enum/userType.enum';
+import { UserType } from 'shared/enum/user-type.enum';
+import { UserStatus } from 'shared/enum/user-status.enum';
 
 const createId = init({
   // A custom random function with the same API as Math.random.
@@ -14,10 +15,6 @@ const createId = init({
   fingerprint: 'medic-app',
 });
 
-interface Verification extends Document {
- readonly isVerified: boolean;
-}
-
 interface Profile extends Document {
   readonly profileId: string;
   readonly userId: string;
@@ -26,12 +23,11 @@ interface Profile extends Document {
   readonly dob: string;
   readonly emailId: string;
   readonly mobileNumber: string;
-  readonly type: string;
-  readonly isNewUser: boolean;
+  readonly type: UserType;
   readonly role: [string];
   readonly createdBy?: Partial<User>;
   readonly updatedBy?: Partial<User>;
-  readonly verification?: Verification;
+  readonly status: string;
 }
 
 type ProfileModel = Model<Profile>;
@@ -65,15 +61,10 @@ const ProfileScheme = new Schema<Profile>(
     mobileNumber: {
       type: String,
     },
-    verification:{
-      isVerified:{
-        type: Boolean,
-        default: false,
-      }
-    },
-    isNewUser: {
-      type: Boolean,
-      default: true,
+    status:{
+      type: String,
+      default: UserStatus.NEWUSER,
+      enum: UserStatus
     },
     type: {
       type: String,

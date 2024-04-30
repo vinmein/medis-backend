@@ -14,19 +14,19 @@ import { RefreshTokenRequest } from './interface/refresh-token-request.interface
 export class AuthController {
   constructor(private authService: AuthService) { }
 
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  login(@Req() req: AuthenticatedRequest, @Res() res: Response): Observable<Response> {
-    return this.authService.login(req.user)
-      .pipe(
-        map(token => {
-          return res
-            .header('Authorization', 'Bearer ' + token.access_token)
-            .json(token)
-            .send()
-        })
-      );
-  }
+  // @UseGuards(LocalAuthGuard)
+  // @Post('login')
+  // login(@Req() req: AuthenticatedRequest, @Res() res: Response): Observable<Response> {
+  //   return this.authService.login(req.user)
+  //     .pipe(
+  //       map(token => {
+  //         return res
+  //           .header('Authorization', 'Bearer ' + token.access_token)
+  //           .json(token)
+  //           .send()
+  //       })
+  //     );
+  // }
 
   @Post('register')
   async register(@Body() req: RegisterRequest, @Res() res: Response): Promise<Observable<Response>> {
@@ -69,7 +69,6 @@ export class AuthController {
   async verifyOtp(@Body() req: VerifyRequest, @Res() res: Response): Promise<Observable<Response>> {
     try{
     const response = await this.authService.verifyOtp(req);
-    console.log(response)
     return (response)
       .pipe(
         map(token => {

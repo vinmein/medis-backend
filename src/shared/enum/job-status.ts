@@ -1,7 +1,7 @@
-export enum Status {
+export enum JobStatus {
     PENDING = 'PENDING',
-    SUBMITTED = 'SUBMITTED',
     APPROVED = 'APPROVED',
+    CANCELED = 'CANCELED',
     REJECTED = 'REJECTED',
     WITHDRAWN = 'WITHDRAWN',
   }

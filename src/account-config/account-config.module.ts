@@ -7,5 +7,6 @@ import { DatabaseModule } from 'database/database.module';
   imports: [DatabaseModule],
   controllers: [AccountConfigController],
   providers: [AccountConfigService],
+  exports:[AccountConfigService]
 })
 export class AccountConfigModule {}

@@ -5,4 +5,5 @@ export enum UserType {
     MODERATOR = 'MODERATOR',
     NURSE = 'NURSE',
     ORGADMIN = 'ORGADMIN',
+    USER = 'USER',
   }

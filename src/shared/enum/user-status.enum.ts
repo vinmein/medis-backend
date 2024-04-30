@@ -1,0 +1,7 @@
+export enum UserStatus {
+    NEWUSER = 'NEW_USER',
+    VERIFIEDUSER = 'VERIFIED_USER',
+    BLOCKED = 'BLOCKED',
+    DELETED = 'DELETED',
+    WITHDRAWN = 'WITHDRAWN',
+  }

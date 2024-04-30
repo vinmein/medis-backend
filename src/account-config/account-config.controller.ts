@@ -12,15 +12,6 @@ import { JwtCognitoAuthGuard } from 'auth/guard/jwt-cognito-auth.guard';
 export class AccountConfigController {
   constructor(private readonly accountConfigService: AccountConfigService) {}
 
-  @Post()
-  @UseGuards(JwtCognitoAuthGuard, RolesGuard)
-  @HasRoles(RoleType.HR, RoleType.DOCTOR)
-  create(@Body() createAccountConfigDto: CreateAccountConfigDto, @Req() request) {
-    createAccountConfigDto.userId = request.user.sub;
-    console.log(createAccountConfigDto)
-    return this.accountConfigService.create(createAccountConfigDto);
-  }
-
   @Get()
   @UseGuards(JwtCognitoAuthGuard)
   findAll() {

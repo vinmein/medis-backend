@@ -1,10 +1,13 @@
 import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import { SubscriptionDto } from './subscription.dto';
+import { CreditsDTO } from './credits.dto';
+
 
 export class CreateAccountConfigDto {
 
   userId: string;
 
-  readonly isSubscribed: string;
+  isSubscribed: SubscriptionDto;
 
-  readonly credits: string;
+  credits: CreditsDTO;
 }

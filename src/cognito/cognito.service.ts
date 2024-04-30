@@ -36,10 +36,8 @@ export class CognitoService {
     group: string,
   ): Promise<CognitoUser> {
     const attributeList = [];
-    console.log(email);
     if (attributes) {
       Object.keys(attributes).map((value) => {
-        console.log(value);
         attributeList.push({
           Name: value,
           Value: attributes[value],

@@ -24,7 +24,7 @@ interface Storage extends Document {
   readonly versionId: string;
   readonly url: string;
   readonly category: string;
-  readonly createdBy?: Partial<User>;
+  readonly createdBy?: string;
 }
 
 type StorageModel = Model<Storage>;

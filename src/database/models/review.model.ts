@@ -2,7 +2,7 @@ import { Connection, Document, Model, Schema, SchemaTypes } from 'mongoose';
 import { User } from './user.model';
 import { init } from '@paralleldrive/cuid2';
 import { Status } from 'shared/enum/status.enum';
-import { UserType } from 'shared/enum/userType.enum';
+import { UserType } from 'shared/enum/user-type.enum';
 
 const createId = init({
   // A custom random function with the same API as Math.random.
@@ -15,7 +15,19 @@ const createId = init({
   fingerprint: 'medic-app',
 });
 
+interface File extends Document {
+  readonly fileId: string;
+  readonly url: string;
+  readonly type: string;
+  readonly isValid: string;
+  readonly feedback: string;
+}
 
+interface CheckList extends Document {
+  readonly checkId: string;
+  readonly checkItem: string;
+  readonly status: string;
+}
 
 interface UserReview extends Document {
   readonly requestId: string;
@@ -26,13 +38,54 @@ interface UserReview extends Document {
   readonly status: string;
   readonly feedback: string;
   readonly userType: string;
-  readonly reviewedBy?: Partial<User>;
-  readonly createdBy?: Partial<User>;
+  readonly reviewedBy?: string;
+  readonly createdBy?: string;
+  readonly documents?: [File];
+  readonly checkList?:[CheckList]
 }
 
 type UserReviewModel = Model<UserReview>;
 
+const CheckList =  new Schema<CheckList>({
+  checkId: {
+    type: String,
+    required: true,
+    default:  createId()
+  },
+  checkItem:{
+    type: String,
+    required: true,
+  },
+  status: {
+    type: String,
+    default: Status.PENDING,
+    enum: Status
+  },
+})
 
+const Files = new Schema<File>({
+  fileId: {
+    type: String,
+    required: true,
+    default:  createId()
+  },
+  url: {
+    type: String,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  isValid: {
+    type: String,
+    default: Status.PENDING,
+    enum: Status
+  },
+  feedback: {
+    type: String,
+  },
+})
 
 const UserReviewSchema = new Schema<UserReview>(
   {
@@ -43,6 +96,7 @@ const UserReviewSchema = new Schema<UserReview>(
     },
     createdBy: {
       type: String,
+      unique: true,
       required: true,
     },
     education: {
@@ -65,12 +119,18 @@ const UserReviewSchema = new Schema<UserReview>(
     feedback:{
       type: String,
     },
+    checkList: {
+      type:[CheckList]
+    },
     reviewedBy:{
       type: String,
     },
+    documents:{
+      type:[Files]
+    },
     status: {
       type: String,
-      default: Status.PENDING,
+      default: Status.SUBMITTED,
       enum: Status
     },
   },

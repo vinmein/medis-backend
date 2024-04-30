@@ -1,6 +1,5 @@
-export enum Status {
+export enum ApplicationStatus {
     PENDING = 'PENDING',
-    SUBMITTED = 'SUBMITTED',
     APPROVED = 'APPROVED',
     REJECTED = 'REJECTED',
     WITHDRAWN = 'WITHDRAWN',
