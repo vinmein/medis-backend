@@ -37,17 +37,21 @@ export class JwtCognitoAuthGuard extends AuthGuard('jwt') {
       request.user = response;
       return true;
     } catch (error) {
-      // console.error('Token validation error:', error);
-      return false;
+      if (error.toString().indexOf("Token expired")>-1) {
+        // Handle expired token, e.g., by throwing a more user-friendly exception
+        throw new UnauthorizedException('Your session has expired. Please log in again.');
+      }
+      throw error;
+      // return false;
     }
   }
 
   handleRequest(err, user, info) {
     // You can throw an exception based on either "info" or "err" arguments
+
     if (err || !user) {
       throw err || new UnauthorizedException();
     }
-    console.log(err)
     return user;
   }
 

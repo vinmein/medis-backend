@@ -1,4 +1,6 @@
 import { IsEmail, IsNotEmpty, MaxLength, MinLength } from "class-validator";
+import { PromoObjDto } from "./promo-obj.dto";
+import { UserStatus } from "shared/enum/user-status.enum";
 
 export class CreateProfileDto {
   
@@ -12,7 +14,9 @@ export class CreateProfileDto {
     readonly lastName: string;
   
     readonly dob: string;
-  
+      
+    readonly promoObj?: PromoObjDto;
+
     @IsNotEmpty()
     readonly emailId: string;
   
@@ -23,4 +27,6 @@ export class CreateProfileDto {
 
     @IsNotEmpty()
     readonly type: string;
+
+    status?: UserStatus
 }

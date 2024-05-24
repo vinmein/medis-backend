@@ -8,7 +8,10 @@ import {
 import { CreateUserReviewDto } from './dto/create-user-review.dto';
 import { UpdateUserReviewDto } from './dto/update-user-review.dto';
 import { UserReviewModel } from 'database/models/review.model';
-import { DEFAULT_CREDITS, USER_REVIEW_CONFIG_MODEL } from 'database/database.constants';
+import {
+  DEFAULT_CREDITS,
+  USER_REVIEW_CONFIG_MODEL,
+} from 'database/database.constants';
 import { EMPTY, from, Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap, throwIfEmpty } from 'rxjs/operators';
 import { MongoServerError } from 'mongodb';
@@ -25,6 +28,8 @@ import { UserType } from 'shared/enum/user-type.enum';
 import { SubscriptionStatus } from 'shared/enum/subscription-status';
 import { SubscriptionDto } from 'account-config/dto/subscription.dto';
 import { CreditsDTO } from 'account-config/dto/credits.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
 
 @Injectable()
 export class UserReviewService {
@@ -32,7 +37,12 @@ export class UserReviewService {
     private profileService: ProfileService,
     private accountConfigService: AccountConfigService,
     @Inject(USER_REVIEW_CONFIG_MODEL) private userReviewModel: UserReviewModel,
+    private readonly eventEmitter: EventEmitter2
   ) {}
+
+  publishEvent<T>(topic:string, data: T) {
+    this.eventEmitter.emit(topic, data);
+  }
 
   create(createUserReviewDto: CreateUserReviewDto) {
     return from(this.userReviewModel.create({ ...createUserReviewDto })).pipe(
@@ -52,30 +62,82 @@ export class UserReviewService {
   }
 
   findOne(requestId: string) {
-    return this.userReviewModel.findOne({ requestId });
+    return from(this.userReviewModel.findOne({ requestId })).pipe(
+      map((document) => {
+        if (!document) {
+          throw new NotFoundException(`${requestId} was not found`);
+        }
+        return document;
+      }),
+      catchError((err) => {
+        throw err;
+      }),
+      throwIfEmpty(() => new NotFoundException(`No record found`)),
+    );
+  }
+
+  findOnebyQuery(query) {
+    return from(this.userReviewModel.findOne(query)).pipe(
+      map((document) => {
+        if (!document) {
+          throw new NotFoundException(`Record was not found`);
+        }
+        return document;
+      }),
+      catchError((err) => {
+        throw err;
+      }),
+      throwIfEmpty(() => new NotFoundException(`No record found`)),
+    );
+  }
+
+  findOneByUserId(userId: string) {
+    return from(this.userReviewModel.findOne({ userId })).pipe(
+      map((document) => {
+        if (!document) {
+          throw new NotFoundException(`record was not found`);
+        }
+        return document;
+      }),
+    );
   }
 
   update(requestId: string, updateUserReviewDto: UpdateUserReviewDto) {
-    return this.userReviewModel.updateOne({ requestId }, updateUserReviewDto);
-  }
-
-  inReview(requestId: string, updateInReviewDto: UpdateInReviewDto) {
-    return from(this.userReviewModel.findOne({ requestId })).pipe(
+    return from(
+      this.userReviewModel.findOneAndUpdate(
+        { requestId },
+        updateUserReviewDto,
+        {
+          safe: false,
+          upsert: false,
+          new: true,
+        },
+      ),
+    ).pipe(
       mergeMap((document) => {
         if (!document) {
-          throw new NotFoundException(`Post:${requestId} was not found`);
+          throw new BadRequestException(`Review:${requestId} was not found`);
         }
-        if (document.status === Status.SUBMITTED) {
-          return from(this.userReviewModel.updateOne(
-            { requestId },
-            updateInReviewDto,
-          )).pipe(
-            map((document)=>{
-              if(document && 'modifiedCount' in document && document.modifiedCount>0){
-                return {message: "Status updated succcessfully"}
+        if (document.createdBy) {
+          return from(
+            this.profileService.updateByQuery(
+              { userId: document.createdBy },
+              {
+                status: UserStatus.REVIEW_SUBMITTED,
+                reviewRequestId: document.requestId,
+              },
+            ),
+          ).pipe(
+            map((document) => {
+              if (
+                document &&
+                'modifiedCount' in document &&
+                document.modifiedCount > 0
+              ) {
+                return { message: 'Status updated succcessfully' };
               }
-              throw new BadRequestException("Request not found")
-            })
+              throw new BadRequestException('User not found');
+            }),
           );
         } else {
           throw new BadRequestException('Record is not in submitted state');
@@ -90,10 +152,60 @@ export class UserReviewService {
     );
   }
 
+  inReview(requestId: string, updateInReviewDto: UpdateInReviewDto) {
+    return from(this.userReviewModel.findOne({ requestId })).pipe(
+      mergeMap((document) => {
+        if (!document) {
+          throw new NotFoundException(`Post:${requestId} was not found`);
+        }
+        if (document.status === Status.SUBMITTED) {
+          const userId = document.createdBy;
+          return from(
+            this.userReviewModel.updateOne({ requestId }, updateInReviewDto),
+          ).pipe(
+            map((document) => {
+              if (
+                document &&
+                'modifiedCount' in document &&
+                document.modifiedCount > 0
+              ) {
+                return { userId };
+              }
+              throw new BadRequestException('Request not found');
+            }),
+          );
+        } else {
+          throw new BadRequestException('Record is not in submitted state');
+        }
+      }),
+      mergeMap((update) => {
+        return from(
+          this.profileService.updateByQuery(
+            { userId: update.userId },
+            {
+              status: UserStatus.IN_REVIEW,
+            },
+          ),
+        ).pipe(
+          map(() => {
+            return { message: 'Status updated succcessfully' };
+          }),
+        );
+      }),
+      catchError((err) => {
+        if (err instanceof MongoServerError && err.code === 11000) {
+          throw new ConflictException('Duplicate entry for createdBy field');
+        }
+        throw err;
+      }),
+    );
+  }
+
   updateReview(
     requestId: string,
     updateReviewFeedbackDto: UpdateReviewFeedbackDto,
   ) {
+    this.eventEmitter.emit('USER_REVIEW.APPROVED', { data: "hi" });
     return from(this.userReviewModel.findOne({ requestId })).pipe(
       mergeMap((request) => {
         if (!request) {
@@ -120,38 +232,48 @@ export class UserReviewService {
           const currentUserStatus = response.user.status;
           const updateProfileDto = new UpdateProfileDto();
           updateProfileDto.status = UserStatus.VERIFIEDUSER;
+          updateProfileDto.mobileNumber = response.request.mobileNumber;
           const queryProfileDto = new QueryProfileDto();
           queryProfileDto.userId = response.user.userId;
-          this.profileService.updateByQuery(
-            queryProfileDto,
-            updateProfileDto,
-          );
-          if(currentUserStatus == UserStatus.NEWUSER && [UserType.DOCTOR, UserType.HR, UserType.NURSE].indexOf(response.user.type)>-1){
+          this.profileService.updateByQuery(queryProfileDto, updateProfileDto);
+          if (
+            currentUserStatus == UserStatus.NEWUSER &&
+            [UserType.DOCTOR, UserType.HR, UserType.NURSE].indexOf(
+              response.user.type,
+            ) > -1
+          ) {
             const createConfigDto = new CreateAccountConfigDto();
             createConfigDto.userId = response.user.userId;
             const subscriptionDto = new SubscriptionDto();
-            subscriptionDto.status = SubscriptionStatus.NOTSUBSCRIBED
+            subscriptionDto.status = SubscriptionStatus.NOTSUBSCRIBED;
             createConfigDto.isSubscribed = subscriptionDto;
 
-            const creditsDTO = new CreditsDTO()
+            const creditsDTO = new CreditsDTO();
             creditsDTO.available = DEFAULT_CREDITS;
-            if(updateReviewFeedbackDto.additionalCoins){
-              creditsDTO.available = creditsDTO.available+updateReviewFeedbackDto.additionalCoins
+            if (updateReviewFeedbackDto.additionalCoins) {
+              creditsDTO.available =
+                creditsDTO.available + updateReviewFeedbackDto.additionalCoins;
             }
             createConfigDto.credits = creditsDTO;
             this.accountConfigService.create(createConfigDto);
           }
         }
-        return from(this.userReviewModel.updateOne(
-          { requestId, createdBy: response.user.userId },
-          updateReviewFeedbackDto,
-        )).pipe(
+
+        const eventObj: UserReviewEventDTO ={ requestId, createdBy: response.user.userId }
+        this.publishEvent('USER_REVIEW.APPROVED', eventObj)
+        
+        return from(
+          this.userReviewModel.updateOne(
+            { requestId, createdBy: response.user.userId },
+            updateReviewFeedbackDto,
+          ),
+        ).pipe(
           map((document) => {
             if (!document) {
               throw new NotFoundException(`Failed to update the status`);
             }
             // Combine the 'document' and 'request' into a single object
-            return { message: "successfully updated the feedback"};
+            return { message: 'successfully updated the feedback' };
           }),
         );
       }),

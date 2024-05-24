@@ -27,7 +27,7 @@ const  IDDocumentSchema = new Schema<IDDocument>(
     type: {
       type: String,
       required: true,
-      enum: ["CERTIFICATE", "IDPROOF"]
+      enum: ["DEGREE_CERTIFICATE", "DOCUMENTS", "IDPROOF", "PHOTO"]
     },
     url: {
       type: String,

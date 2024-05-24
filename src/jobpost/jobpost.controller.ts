@@ -16,12 +16,13 @@ import { JwtCognitoAuthGuard } from 'auth/guard/jwt-cognito-auth.guard';
 import { RolesGuard } from 'auth/guard/roles.guard';
 import { HasRoles } from 'auth/guard/has-roles.decorator';
 import { RoleType } from 'shared/enum/role-type.enum';
+import { SubscriptionGuard } from 'shared/guard/subscription.guard';
 
 @Controller('jobpost')
 export class JobpostController {
   constructor(private readonly jobpostService: JobpostService) {}
 
-  @UseGuards(JwtCognitoAuthGuard, RolesGuard)
+  @UseGuards(JwtCognitoAuthGuard, RolesGuard, SubscriptionGuard)
   @HasRoles(
     RoleType.HR,
     RoleType.DOCTOR,

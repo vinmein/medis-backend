@@ -23,6 +23,7 @@ interface Storage extends Document {
   readonly key: string;
   readonly versionId: string;
   readonly url: string;
+  readonly mimeType: string;
   readonly category: string;
   readonly createdBy?: string;
 }
@@ -52,6 +53,10 @@ const StorageSchema = new Schema<Storage>(
     },
     key: {
       type: String,
+    },
+    mimeType:{
+      type: String,
+      required: true,
     },
     bucket: {
       type: String,

@@ -23,13 +23,16 @@ import { FeedModule } from './feed/feed.module';
 import { StorageModule } from './storage/storage.module';
 import { S3Module } from './s3/s3.module';
 import { UserReviewModule } from './user-review/user-review.module';
+import { PromocodeModule } from './promocode/promocode.module';
 import amplifyConfig from 'config/amplify.config';
+import applicationConfig from 'config/app.config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [amplifyConfig], // Load the configuration
+      load: [amplifyConfig, applicationConfig], // Load the configuration
     }),
     DatabaseModule,
     PostModule,
@@ -51,7 +54,9 @@ import amplifyConfig from 'config/amplify.config';
     FeedModule,
     StorageModule,
     S3Module,
-    UserReviewModule
+    UserReviewModule,
+    PromocodeModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

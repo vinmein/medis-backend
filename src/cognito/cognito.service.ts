@@ -2,8 +2,17 @@
 const AWS = require('aws-sdk');
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { VerifyRequest } from 'auth/interface/verify-request.interface';
-import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { CognitoUser as CUser, AuthenticationDetails, CognitoUserSession, ICognitoUserData, CognitoUserPool, CognitoRefreshToken } from 'amazon-cognito-identity-js';
+import CognitoIdentityServiceProvider, {
+  RespondToAuthChallengeResponse,
+} from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import {
+  CognitoUser as CUser,
+  AuthenticationDetails,
+  CognitoUserSession,
+  ICognitoUserData,
+  CognitoUserPool,
+  CognitoRefreshToken,
+} from 'amazon-cognito-identity-js';
 
 import { USER } from './cognito.constants';
 
@@ -20,14 +29,6 @@ export class CognitoService {
     this.cognito = new AWS.CognitoIdentityServiceProvider({
       region: 'ap-southeast-1',
     });
-    // Amplify.configure({
-    //   Auth: {
-    //     region: 'ap-southeast-1',
-    //     userPoolId: userPoolId,
-    //     userPoolWebClientId: clientId,
-    //     mandatorySignIn: true,
-    //   },
-    // });
   }
 
   async registerUser(
@@ -83,8 +84,8 @@ export class CognitoService {
             };
             this.cognito.adminAddUserToGroup(addToGroup, (err, response) => {});
             const userObj: CognitoUser = {
-               UserConfirmed: response.UserConfirmed,
-               UserSub: response.UserSub
+              UserConfirmed: response.UserConfirmed,
+              UserSub: response.UserSub,
             };
             return resolve(userObj);
           }
@@ -105,10 +106,13 @@ export class CognitoService {
     return new Promise(async (resolve, reject) => {
       this.cognito.initiateAuth(params, (err, response) => {
         if (err) {
-          console.log(err);
-          return reject(
-            new HttpException('Bad Request', HttpStatus.BAD_REQUEST),
-          );
+          if (err.message) {
+            return reject(new HttpException(err, HttpStatus.BAD_REQUEST));
+          } else {
+            return reject(
+              new HttpException('Bad Request', HttpStatus.BAD_REQUEST),
+            );
+          }
         } else {
           return resolve(response);
         }
@@ -116,7 +120,9 @@ export class CognitoService {
     });
   }
 
-  async verifyOtp(payload: VerifyRequest): Promise<any> {
+  async verifyOtp(
+    payload: VerifyRequest,
+  ): Promise<RespondToAuthChallengeResponse> {
     const params = {
       ClientId: this.clientId,
       ChallengeName: 'CUSTOM_CHALLENGE',
@@ -149,15 +155,14 @@ export class CognitoService {
   }
 
   async refreshTokenv2(refreshToken: string): Promise<any> {
-   
     const userToken = {
       REFRESH_TOKEN: refreshToken,
-    }
-    const params : CognitoIdentityServiceProvider.AdminInitiateAuthRequest= {
+    };
+    const params: CognitoIdentityServiceProvider.AdminInitiateAuthRequest = {
       AuthFlow: 'REFRESH_TOKEN_AUTH',
       ClientId: this.clientId,
       UserPoolId: this.userPoolId,
-      AuthParameters :userToken,
+      AuthParameters: userToken,
     };
     return new Promise(async (resolve, reject) => {
       this.cognito.adminInitiateAuth(params, (err, response) => {
@@ -181,7 +186,6 @@ export class CognitoService {
     });
   }
 
-
   async refreshToken(userName: string, refreshToken: string): Promise<any> {
     const userPool = new CognitoUserPool({
       UserPoolId: this.userPoolId,
@@ -193,7 +197,6 @@ export class CognitoService {
       Pool: userPool,
     };
 
-    
     const cognitoUser = new CUser(userData);
     const token = new CognitoRefreshToken({ RefreshToken: refreshToken });
     return new Promise(async (resolve, reject) => {
@@ -205,5 +208,19 @@ export class CognitoService {
       });
     });
   }
-}
 
+  async logout(accessToken: string): Promise<any> {
+    const params = {
+      AccessToken: accessToken// The access token of the user you want to sign out globally
+    };
+    return new Promise(async (resolve, reject) => {
+    this.cognito.globalSignOut(params, function(err, data) {
+      if (err) {
+        reject(err); // an error occurred
+      } else {
+        resolve(data); // successful response
+      }
+    });
+  });
+  }
+}

@@ -19,6 +19,8 @@ interface File extends Document {
   readonly fileId: string;
   readonly url: string;
   readonly type: string;
+  readonly mimeType: string;
+  readonly storageId: string;
   readonly isValid: string;
   readonly feedback: string;
 }
@@ -34,6 +36,8 @@ interface UserReview extends Document {
   readonly education: string;
   readonly yearOfPassedOut: string;
   readonly councilNumber: string;
+  readonly council: string;
+  readonly mobileNumber: string;
   readonly verificationFor: string;
   readonly status: string;
   readonly feedback: string;
@@ -77,6 +81,14 @@ const Files = new Schema<File>({
     type: String,
     required: true,
   },
+  mimeType:{
+    type: String,
+    required: true,
+  },
+  storageId:{
+    type: String,
+    required: true,
+  },
   isValid: {
     type: String,
     default: Status.PENDING,
@@ -107,6 +119,10 @@ const UserReviewSchema = new Schema<UserReview>(
       type: String,
       required: true,
     },
+    council:{
+      type: String,
+      required: true,
+    },
     councilNumber: {
       type: String,
       required: true,
@@ -115,6 +131,10 @@ const UserReviewSchema = new Schema<UserReview>(
       type: String,
       required: true,
       enum: UserType
+    },
+    mobileNumber:{
+      type: String,
+      required: true,
     },
     feedback:{
       type: String,

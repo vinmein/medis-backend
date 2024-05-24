@@ -1,14 +1,24 @@
 import { IsNotEmpty } from "class-validator";
-import { JobStatus } from "shared/enum/job-status";
-import { JobType } from "shared/enum/job-type.enum";
+import { JobStatus } from "shared/enum/job_status";
+import { JobType } from "shared/enum/job_type.enum";
 
 export class WorkDurationDto {
-    @IsNotEmpty()
-    readonly hours: number;
+    readonly hours?: number;
+
+    readonly duration?: string;
 
     @IsNotEmpty()
-    readonly duration: string;
-    
+    readonly workStartDate: number;
+
+    readonly workEndDate?: number;
+}
+
+export class PostDurationDto {
+    @IsNotEmpty()
+    readonly startDate: number;
+
+    @IsNotEmpty()
+    readonly endDate: number;
 }
 
 export class SalaryDto {
@@ -21,6 +31,18 @@ export class SalaryDto {
 }
 
 
+export class CriticalityDto {
+    readonly isCritical: boolean;
+
+    readonly message: string;
+}
+
+export class RequiredCreditsDto {
+    readonly forApply: number;
+
+    readonly refund: number;
+}
+
 export class CreateJobpostDto {
     createdBy: string;
 
@@ -31,20 +53,26 @@ export class CreateJobpostDto {
     readonly description: string;
 
     @IsNotEmpty()
-    readonly startDate: number;
+    readonly postType: string;
+
+    readonly organisationId?: string;
+    
+    readonly urgency?: CriticalityDto;
 
     @IsNotEmpty()
-    readonly endDate: number;
+    readonly postDuration: PostDurationDto;
 
     readonly workDuration?: WorkDurationDto;
 
     @IsNotEmpty()
     readonly salary: SalaryDto;
 
-    readonly status: JobStatus;
+    readonly status: string;
 
     @IsNotEmpty()
-    readonly jobType: JobType;
+    readonly jobType: string;
 
-    readonly requiredCredits: number;
+    readonly requiredCredits: RequiredCreditsDto;
 }
+
+  

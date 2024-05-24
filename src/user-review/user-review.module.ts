@@ -9,5 +9,6 @@ import { AccountConfigModule } from 'account-config/account-config.module';
   imports: [ProfileModule, AccountConfigModule, DatabaseModule],
   controllers: [UserReviewController],
   providers: [UserReviewService],
+  exports:[UserReviewService]
 })
 export class UserReviewModule {}

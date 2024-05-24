@@ -15,6 +15,12 @@ export class CreateUserReviewDto {
     readonly councilNumber: string;
 
     @IsNotEmpty()
+    readonly council: string;
+
+    @IsNotEmpty()
+    readonly mobileNumber: string;
+
+    @IsNotEmpty()
     readonly userType: string;
 
     readonly documents: [FileDto]

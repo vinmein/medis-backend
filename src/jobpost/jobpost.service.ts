@@ -2,7 +2,7 @@ import { ConflictException, Inject, Injectable, NotFoundException } from '@nestj
 import { CreateJobpostDto } from './dto/create-jobpost.dto';
 import { UpdateJobpostDto } from './dto/update-jobpost.dto';
 import { JOB_POST_MODEL } from 'database/database.constants';
-import { JobPostModel } from 'database/models/job-post.model';
+import { JobPostModel } from 'database/models/job_post.model';
 import { MongoServerError } from 'mongodb';
 import { EMPTY, catchError, from, mergeMap, of, throwIfEmpty } from 'rxjs';
 

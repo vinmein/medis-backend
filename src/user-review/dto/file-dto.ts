@@ -6,5 +6,11 @@ export class FileDto {
 
     @IsNotEmpty()
     readonly type: string;
+
+    @IsNotEmpty()
+    readonly mimeType: string;
+
+    @IsNotEmpty()
+    readonly storageId: string;
     
 }

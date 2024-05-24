@@ -6,4 +6,5 @@ export enum RoleType {
   MODERATOR = 'MODERATOR',
   NURSE = 'NURSE',
   USER = 'USER',
+  SALES = 'SALES',
 }

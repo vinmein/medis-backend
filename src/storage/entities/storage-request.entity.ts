@@ -13,6 +13,9 @@ export class StorageRequest {
     bucket: string;
 
     @IsNotEmpty()
+    mimeType: string;
+    
+    @IsNotEmpty()
     versionId: string;
 
     @IsNotEmpty()

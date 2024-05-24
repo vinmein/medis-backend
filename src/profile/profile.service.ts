@@ -37,10 +37,14 @@ export class ProfileService {
   }
 
   updateByQuery(query: QueryProfileDto, updateProfileDto: UpdateProfileDto) {
-    return this.profileModel.updateOne(query, {$set: updateProfileDto});
+    return this.profileModel.updateOne(query, { $set: updateProfileDto });
   }
 
   remove(id: string) {
     return this.profileModel.deleteOne({ id });
+  }
+
+  removebyQuery(query:QueryProfileDto) {
+    return this.profileModel.deleteOne(query);
   }
 }

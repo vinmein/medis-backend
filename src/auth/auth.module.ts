@@ -10,13 +10,17 @@ import jwtConfig from '../config/jwt.config';
 import { AuthController } from './auth.controller';
 import { AmplifyModule } from 'cognito/cognito.module';
 import { ProfileModule } from 'profile/profile.module';
+import { PromocodeModule } from 'promocode/promocode.module';
+import { AccountConfigModule } from 'account-config/account-config.module';
 
 @Module({
   imports: [
     ConfigModule.forFeature(jwtConfig),
     UserModule,
     ProfileModule,
+    PromocodeModule,
     AmplifyModule,
+    AccountConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule.forFeature(jwtConfig)],

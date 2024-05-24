@@ -55,6 +55,17 @@ const AccountConfigScheme = new Schema<AccountConfig>(
         type: String,
         enum: SubscriptionStatus,
       },
+      duration: {
+        type: String,
+        enum: Duration.MONTHLY
+      },
+      period: {
+        type: Number,
+        default: 0
+      },
+      started:{
+        type: Number,
+      }
     },
     credits: {
       defaultValue: {

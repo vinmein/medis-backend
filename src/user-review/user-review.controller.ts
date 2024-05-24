@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UserReviewService } from './user-review.service';
 import { CreateUserReviewDto } from './dto/create-user-review.dto';
@@ -27,7 +28,6 @@ export class UserReviewController {
   @HasRoles(RoleType.HR, RoleType.DOCTOR, RoleType.NURSE)
   @Post()
   create(@Body() createUserReviewDto: CreateUserReviewDto, @Req() request) {
-    console.log(request.user.sub)
     try {
       createUserReviewDto.createdBy = request.user.sub;
       return this.userReviewService.create(createUserReviewDto);
@@ -45,9 +45,27 @@ export class UserReviewController {
 
   @Get(':requestId')
   @UseGuards(JwtCognitoAuthGuard, RolesGuard)
-  @HasRoles(RoleType.HR, RoleType.DOCTOR, RoleType.NURSE, RoleType.ADMIN, RoleType.MODERATOR)
-  findOne(@Param('requestId') id: string) {
-    return this.userReviewService.findOne(id);
+  @HasRoles(
+    RoleType.HR,
+    RoleType.DOCTOR,
+    RoleType.NURSE,
+    RoleType.SALES,
+    RoleType.ADMIN,
+    RoleType.MODERATOR,
+  )
+  findOne(@Param('requestId') id: string, @Query() query, @Req() request) {
+    if(id == "me"){
+      const payload = {
+        ...query,
+        createdBy: request.user.sub
+      }
+      return this.userReviewService.findOnebyQuery(payload);
+    }
+    const payload = {
+      ...query,
+      requestId: id
+    }
+    return this.userReviewService.findOnebyQuery(payload);
   }
 
   @Patch(':requestId')
@@ -65,8 +83,8 @@ export class UserReviewController {
   @HasRoles(RoleType.ADMIN, RoleType.MODERATOR)
   feedbackUser(
     @Param('requestId') id: string,
-    @Body() updateReviewFeedbackDto: UpdateReviewFeedbackDto, 
-    @Req() request
+    @Body() updateReviewFeedbackDto: UpdateReviewFeedbackDto,
+    @Req() request,
   ) {
     updateReviewFeedbackDto.reviewedBy = request.user.sub;
     return this.userReviewService.updateReview(id, updateReviewFeedbackDto);
@@ -77,13 +95,12 @@ export class UserReviewController {
   @HasRoles(RoleType.ADMIN, RoleType.MODERATOR)
   inreviewUser(
     @Param('requestId') id: string,
-    @Body() updateInReviewDto: UpdateInReviewDto, 
-    @Req() request
+    @Body() updateInReviewDto: UpdateInReviewDto,
+    @Req() request,
   ) {
     updateInReviewDto.reviewedBy = request.user.sub;
     return this.userReviewService.inReview(id, updateInReviewDto);
   }
-
 
   @Delete(':id')
   remove(@Param('id') id: string) {

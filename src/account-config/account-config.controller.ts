@@ -13,23 +13,46 @@ export class AccountConfigController {
   constructor(private readonly accountConfigService: AccountConfigService) {}
 
   @Get()
-  @UseGuards(JwtCognitoAuthGuard)
+  @UseGuards(JwtCognitoAuthGuard, RolesGuard)
+  @HasRoles(
+    RoleType.ADMIN,
+    RoleType.MODERATOR,
+  )
   findAll() {
     return this.accountConfigService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.accountConfigService.findOne(+id);
+  @Get(':userId')
+  @UseGuards(JwtCognitoAuthGuard, RolesGuard)
+  @HasRoles(
+    RoleType.HR,
+    RoleType.DOCTOR,
+    RoleType.NURSE,
+    RoleType.ORGADMIN,
+    RoleType.ADMIN,
+    RoleType.MODERATOR,
+  )
+  findOne(@Param('userId') id: string) {
+    return this.accountConfigService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAccountConfigDto: UpdateAccountConfigDto) {
-    return this.accountConfigService.update(+id, updateAccountConfigDto);
+  @Patch(':userId')
+  @UseGuards(JwtCognitoAuthGuard, RolesGuard)
+  @HasRoles(
+    RoleType.MODERATOR,
+    RoleType.ADMIN,
+  )
+  update(@Param('userId') id: string, @Body() updateAccountConfigDto: UpdateAccountConfigDto) {
+    return this.accountConfigService.update(id, updateAccountConfigDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(':userId')
+  @UseGuards(JwtCognitoAuthGuard, RolesGuard)
+  @HasRoles(
+    RoleType.ADMIN,
+    RoleType.MODERATOR,
+  )
+  remove(@Param('userId') id: string) {
     return this.accountConfigService.remove(+id);
   }
 }

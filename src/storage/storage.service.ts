@@ -46,12 +46,13 @@ export class StorageService {
     storageRequest.bucket = responseDto.Bucket;
     storageRequest.versionId = responseDto.VersionId;
     storageRequest.url = responseDto.url;
+    storageRequest.mimeType = mimetype;
     storageRequest.category = category;
     storageRequest.createdBy = createdBy
     const createResponse = this.storageModel.create(storageRequest);
     return from(createResponse).pipe(
       map((response) => {
-        return FilterKeysHelper.filterKeys(response.toObject(), ["storageId", "url", "location", "createdBy"])
+        return FilterKeysHelper.filterKeys(response.toObject(), ["storageId", "url", "location", "createdBy", "category", "mimeType"])
       }),
     );
     

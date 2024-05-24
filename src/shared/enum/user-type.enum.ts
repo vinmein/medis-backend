@@ -6,4 +6,5 @@ export enum UserType {
     NURSE = 'NURSE',
     ORGADMIN = 'ORGADMIN',
     USER = 'USER',
+    SALES = 'SALES',
   }

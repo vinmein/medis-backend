@@ -6,7 +6,9 @@ import {
   DATABASE_CONNECTION,
   JOB_POST_MODEL,
   POST_MODEL,
+  PROFESSION_MODEL,
   PROFILE_MODEL,
+  PROMO_CODE_MODEL,
   STORAGE_CONFIG_MODEL,
   USER_MODEL,
   USER_REVIEW_CONFIG_MODEL,
@@ -17,7 +19,9 @@ import { createProfileModel } from './models/profile.model';
 import { accountConfigModel } from './models/account-config.model';
 import { createStorageModel } from './models/storage.model';
 import { createUserReviewModel } from './models/review.model';
-import { createJobPostModel } from './models/job-post.model';
+import { createJobPostModel } from './models/job_post.model';
+import { createPromocodeModel } from './models/promocode.model';
+import { createQualificationModel } from './models/qualification.model';
 
 export const databaseModelsProviders = [
   {
@@ -58,6 +62,16 @@ export const databaseModelsProviders = [
   {
     provide: JOB_POST_MODEL,
     useFactory: (connection: Connection) => createJobPostModel(connection),
+    inject: [DATABASE_CONNECTION],
+  },
+  {
+    provide: PROMO_CODE_MODEL,
+    useFactory: (connection: Connection) => createPromocodeModel(connection),
+    inject: [DATABASE_CONNECTION],
+  },
+  {
+    provide: PROFESSION_MODEL,
+    useFactory: (connection: Connection) => createQualificationModel(connection),
     inject: [DATABASE_CONNECTION],
   },
 ];

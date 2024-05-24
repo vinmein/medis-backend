@@ -34,7 +34,7 @@ export class StorageController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 500000 }),
+          new MaxFileSizeValidator({ maxSize: 5000000 }),
           new MultiFileValidatorService({}),
         ],
       }),
