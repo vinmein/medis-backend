@@ -53,6 +53,6 @@ export class AccountConfigController {
     RoleType.MODERATOR,
   )
   remove(@Param('userId') id: string) {
-    return this.accountConfigService.remove(+id);
+    return this.accountConfigService.remove(id);
   }
 }

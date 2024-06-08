@@ -1,4 +1,4 @@
-import { SubscriptionStatus } from "shared/enum/subscription-status";
+import { SubscriptionStatus } from "shared/enum/subscription_status";
 
 export class SubscriptionDto {
      status: SubscriptionStatus;

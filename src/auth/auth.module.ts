@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserModule } from '../user/user.module';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './strategy/local.strategy';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigModule, ConfigType } from '@nestjs/config';
@@ -16,7 +14,6 @@ import { AccountConfigModule } from 'account-config/account-config.module';
 @Module({
   imports: [
     ConfigModule.forFeature(jwtConfig),
-    UserModule,
     ProfileModule,
     PromocodeModule,
     AmplifyModule,
@@ -33,7 +30,7 @@ import { AccountConfigModule } from 'account-config/account-config.module';
       inject: [jwtConfig.KEY],
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, JwtStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

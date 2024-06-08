@@ -17,12 +17,13 @@ import { RolesGuard } from 'auth/guard/roles.guard';
 import { HasRoles } from 'auth/guard/has-roles.decorator';
 import { RoleType } from 'shared/enum/role-type.enum';
 import { SubscriptionGuard } from 'shared/guard/subscription.guard';
+import { JobPostGuard } from 'shared/guard/jobPost.guard';
 
 @Controller('jobpost')
 export class JobpostController {
   constructor(private readonly jobpostService: JobpostService) {}
 
-  @UseGuards(JwtCognitoAuthGuard, RolesGuard, SubscriptionGuard)
+  @UseGuards(JwtCognitoAuthGuard, RolesGuard, SubscriptionGuard, JobPostGuard)
   @HasRoles(
     RoleType.HR,
     RoleType.DOCTOR,
@@ -35,7 +36,11 @@ export class JobpostController {
   create(@Body() createJobpostDto: CreateJobpostDto, @Req() request) {
     try {
       createJobpostDto.createdBy = request.user.sub;
-      return this.jobpostService.create(createJobpostDto);
+      console.log(request.isSubscribed)
+      if(request.isSubscribed){
+        return this.jobpostService.create(createJobpostDto);
+      }
+
     } catch (e) {
       throw e;
     }

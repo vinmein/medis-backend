@@ -10,7 +10,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { EMPTY, from, Observable, of } from 'rxjs';
 import { mergeMap, map, throwIfEmpty, catchError } from 'rxjs/operators';
-import { UserService } from '../user/user.service';
 import { AccessToken } from './interface/access-token.interface';
 import { JwtPayload } from './interface/jwt-payload.interface';
 import { UserPrincipal } from './interface/user-principal.interface';
@@ -29,51 +28,18 @@ import { RoleType } from 'shared/enum/role-type.enum';
 import { UserStatus } from 'shared/enum/user-status.enum';
 import { AccountConfigService } from 'account-config/account-config.service';
 import { CreateAccountConfigDto } from 'account-config/dto/create-account-config.dto';
-import { SubscriptionStatus } from 'shared/enum/subscription-status';
+import { SubscriptionStatus } from 'shared/enum/subscription_status';
 import { Duration } from 'shared/enum/duration.enum';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
     private jwtService: JwtService,
     private profileService: ProfileService,
     private accountConfig: AccountConfigService,
     private promoCodeService: PromocodeService,
     @Inject(AMPLIFY_CONNECTION) private readonly amplify: any,
   ) {}
-
-  validateUser(username: string, pass: string): Observable<UserPrincipal> {
-    return this.userService.findByUsername(username).pipe(
-      //if user is not found, convert it into an EMPTY.
-      mergeMap((p) => (p ? of(p) : EMPTY)),
-
-      // Using a general message in the authentication progress is more reasonable.
-      // Concise info could be considered for security.
-      // Detailed info will be helpful for crackers.
-      // throwIfEmpty(() => new NotFoundException(`username:${username} was not found`)),
-      throwIfEmpty(
-        () => new UnauthorizedException(`username or password is not matched`),
-      ),
-
-      mergeMap((user) => {
-        const { _id, password, username, email, roles } = user;
-        return user.comparePassword(pass).pipe(
-          map((m) => {
-            if (m) {
-              return { id: _id, username, email, roles } as UserPrincipal;
-            } else {
-              // The same reason above.
-              //throw new UnauthorizedException('password was not matched.')
-              throw new UnauthorizedException(
-                'username or password is not matched',
-              );
-            }
-          }),
-        );
-      }),
-    );
-  }
 
   // If `LocalStrateg#validateUser` return a `Observable`, the `request.user` is
   // bound to a `Observable<UserPrincipal>`, not a `UserPrincipal`.

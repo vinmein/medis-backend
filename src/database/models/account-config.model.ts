@@ -1,9 +1,10 @@
 import { Connection, Document, Model, Schema, SchemaTypes } from 'mongoose';
 import { User } from './user.model';
 import { init } from '@paralleldrive/cuid2';
-import { SubscriptionStatus } from 'shared/enum/subscription-status';
+import { SubscriptionStatus } from 'shared/enum/subscription_status';
 import { Duration } from 'shared/enum/duration.enum';
 import { DEFAULT_CREDITS } from 'database/database.constants';
+import { SubscriptionType } from 'shared/enum/subscription_type';
 
 const createId = init({
   // A custom random function with the same API as Math.random.
@@ -17,7 +18,12 @@ const createId = init({
 });
 
 interface Subscribed extends Document {
-  readonly status: SubscriptionStatus;
+  readonly status: string;
+  readonly packageCode?: string;
+  readonly duration?: string;
+  readonly period?: number;
+  readonly started?: number;
+  
 }
 
 interface Credits extends Document {
@@ -54,6 +60,9 @@ const AccountConfigScheme = new Schema<AccountConfig>(
       status: {
         type: String,
         enum: SubscriptionStatus,
+      },
+      packageCode:{
+        type: String,
       },
       duration: {
         type: String,

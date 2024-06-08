@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-sample",
+  "name": "medispace",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -33,6 +33,7 @@
     "@paralleldrive/cuid2": "^2.2.2",
     "@sendgrid/mail": "^8.1.0",
     "@types/chance": "^1.1.6",
+    "@types/lodash": "^4.17.4",
     "amazon-cognito-identity-js": "^5.2.14",
     "aws-jwt-verify": "^4.0.1",
     "aws-sdk": "^2.1579.0",

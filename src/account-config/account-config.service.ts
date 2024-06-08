@@ -53,7 +53,7 @@ export class AccountConfigService {
     );
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.accountConfigModel.deleteOne({ id });
   }
 }

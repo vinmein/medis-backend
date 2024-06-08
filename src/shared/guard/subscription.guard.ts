@@ -1,16 +1,8 @@
-import {
-  BadRequestException,
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { Observable, catchError, from, map, mergeMap } from 'rxjs';
-import { AuthenticatedRequest } from '../../auth/interface/authenticated-request.interface';
-import { AccountConfigService } from 'account-config/account-config.service';
-import { SubscriptionStatus } from 'shared/enum/subscription-status';
-import { Duration } from 'shared/enum/duration.enum';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Observable, catchError, from, map, of, switchMap, throwError } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { SubscriptionService } from 'subscription/subscription.service';
+import { JobpostService } from 'jobpost/jobpost.service';
 
 @Injectable()
 export class SubscriptionGuard implements CanActivate {
@@ -21,8 +13,7 @@ export class SubscriptionGuard implements CanActivate {
   };
 
   constructor(
-    private readonly reflector: Reflector,
-    private accountConfigService: AccountConfigService,
+    private subscriptionService: SubscriptionService,
     private configService: ConfigService,
   ) {
     this.jobApplicationConfig = this.configService.get(
@@ -36,57 +27,25 @@ export class SubscriptionGuard implements CanActivate {
     if (!request.user) {
       return false;
     }
-    return from(
-      this.accountConfigService.findOnebyQuery({
-        userId: request.user.sub,
-      }),
-    ).pipe(
-      map((response) => {
-        console.log(response);
-        if (!response) {
-          throw new BadRequestException('Code is not found');
-        }
-        const isSubscribed = { ...response.isSubscribed };
-        const started = isSubscribed['started'];
-        if (isSubscribed.status == SubscriptionStatus.SUBSCRIBED) {
-          if ('duration' in isSubscribed) {
-            let newEpochTime = started; // Default to started time
-            switch (isSubscribed.duration) {
-              case Duration.WEEKLY:
-                // Add 7 days for weekly duration
-                const oneWeekInSeconds = 86400000 * 7;
-                newEpochTime += oneWeekInSeconds;
-                break;
-              case Duration.MONTHLY:
-                // Add 30 days as a common approximation for monthly duration
-                const oneMonthInSeconds = 86400000 * 30;
-                newEpochTime += oneMonthInSeconds;
-                break;
-              case Duration.YEARLY:
-                // Add 365 days for yearly duration (not accounting for leap year)
-                const oneYearInSeconds = 86400000 * 365;
-                newEpochTime += oneYearInSeconds;
-                break;
-            }
-            if (Date.now() < newEpochTime) {
-              request.subscription = response;
-              return true;
-            }
-          }
-        } else {
-          if (response.credits.available < this.jobApplicationConfig.toApply) {
-            throw new BadRequestException(
-              'No credits available to perform this operation',
-            );
-          }
-          return true;
-        }
 
-     
+    return from(this.subscriptionService.verifySubscription(request, this.jobApplicationConfig)).pipe(
+      switchMap(result => {
+        // if (result instanceof Observable) {
+        //   // If the result is an Observable<never>, flatten it to Observable<boolean>
+        //   return result.pipe(
+        //     catchError(err => throwError(() => new Error('Error handling logic here'))),
+        //     switchMap(() => of(false)) // Decide what boolean value to emit if any
+        //   );
+        // } else {
+          // Directly pass through boolean values
+          return of(result);
+        // }
       }),
-      catchError((err) => {
-        throw err;
-      }),
+      catchError(error => {
+        // Global error handler if needed
+        console.error('Error occurred:', error);
+        return of(false); // Return a default boolean in case of error
+      })
     );
   }
 }

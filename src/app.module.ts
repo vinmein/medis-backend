@@ -6,7 +6,6 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { PostModule } from './post/post.module';
 import { SendgridModule } from './sendgrid/sendgrid.module';
-import { UserModule } from './user/user.module';
 import { LoggerModule } from './logger/logger.module';
 import { ProfileModule } from './profile/profile.module';
 import { AmplifyModule } from 'cognito/cognito.module';
@@ -27,6 +26,7 @@ import { PromocodeModule } from './promocode/promocode.module';
 import amplifyConfig from 'config/amplify.config';
 import applicationConfig from 'config/app.config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -37,7 +37,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     DatabaseModule,
     PostModule,
     AuthModule,
-    UserModule,
     SendgridModule,
     LoggerModule.forRoot(),
     ProfileModule,
@@ -57,6 +56,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     UserReviewModule,
     PromocodeModule,
     EventEmitterModule.forRoot(),
+    SubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

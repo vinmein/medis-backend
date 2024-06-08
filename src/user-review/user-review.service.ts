@@ -25,7 +25,7 @@ import { UserStatus } from 'shared/enum/user-status.enum';
 import { AccountConfigService } from 'account-config/account-config.service';
 import { CreateAccountConfigDto } from 'account-config/dto/create-account-config.dto';
 import { UserType } from 'shared/enum/user-type.enum';
-import { SubscriptionStatus } from 'shared/enum/subscription-status';
+import { SubscriptionStatus } from 'shared/enum/subscription_status';
 import { SubscriptionDto } from 'account-config/dto/subscription.dto';
 import { CreditsDTO } from 'account-config/dto/credits.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
