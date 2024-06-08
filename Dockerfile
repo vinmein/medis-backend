@@ -1,5 +1,5 @@
 # Set nginx base image
-FROM node:latest
+FROM node:20
 
 LABEL maintainer="Higglerslab"
 
