@@ -5,4 +5,5 @@ export interface RegisterRequest extends Request {
   readonly email: string;
   readonly attributes: AttributePrincipal;
   readonly group: string;
+  readonly promoCode?: string;
 }

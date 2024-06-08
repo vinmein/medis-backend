@@ -1,10 +1,19 @@
 # Set nginx base image
-FROM node:18
-LABEL maintainer="Hantsy Bai"
-WORKDIR  /app
-COPY  ./dist ./dist
-COPY package.json .
-COPY package-lock.json .
-RUN  npm ci --only=production --ignore-scripts
+FROM node:latest
+
+LABEL maintainer="Higglerslab"
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+COPY . .
+
+RUN npm install --only=production
+
+RUN npm run build
+
 EXPOSE 3000
-CMD ["node", "dist/main"]
+
+# Command to run your app
+CMD ["npm", "start"]

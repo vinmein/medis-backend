@@ -13,8 +13,9 @@ export const databaseConnectionProviders = [
       if (envConfig.env != Environment.DEVELOPMENT) {
         connectionUrl = `mongodb+srv://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}/${dbConfig.dbName}`;
       } else {
-        connectionUrl = `mongodb://${dbConfig.host}/${dbConfig.dbName}`;
+        connectionUrl = `mongodb+srv://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}/${dbConfig.dbName}`;
       }
+      console.log(connectionUrl)
 
       const conn = createConnection(connectionUrl, {
         //useNewUrlParser: true,

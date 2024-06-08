@@ -1,0 +1,8 @@
+export enum Duration {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  QUARTERLY = 'QUARTERLY',
+  HALFYEARLY = 'HALF-YEARLY',
+  YEARLY = 'YEARLY',
+}
