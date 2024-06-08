@@ -10,6 +10,7 @@ COPY package*.json ./
 COPY . .
 
 RUN npm install --only=production
+RUN npx husky install
 
 RUN npm run build
 
