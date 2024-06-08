@@ -9,7 +9,7 @@ COPY package*.json ./
 
 COPY . .
 
-# RUN npm install --only=production
+RUN npm install
 RUN npx install
 
 RUN npm run build
