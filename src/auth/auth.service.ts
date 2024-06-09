@@ -82,6 +82,7 @@ export class AuthService {
           mobileNumber: '',
           promoObj: promoObj,
         };
+        console.log(payload)
         const accountConfigPayload: CreateAccountConfigDto = {
           userId: response.UserSub,
           isSubscribed:{

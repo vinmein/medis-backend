@@ -75,14 +75,18 @@ export class CognitoService {
             };
             this.cognito.adminAddUserToGroup(
               addToUserGroup,
-              (err, response) => {},
+              (err, response) => {
+                console.log(response);
+              },
             );
             const addToGroup = {
               GroupName: group,
               Username: email,
               UserPoolId: this.userPoolId,
             };
-            this.cognito.adminAddUserToGroup(addToGroup, (err, response) => {});
+            this.cognito.adminAddUserToGroup(addToGroup, (err, response) => {
+              console.log(response);
+            });
             const userObj: CognitoUser = {
               UserConfirmed: response.UserConfirmed,
               UserSub: response.UserSub,
@@ -211,16 +215,16 @@ export class CognitoService {
 
   async logout(accessToken: string): Promise<any> {
     const params = {
-      AccessToken: accessToken// The access token of the user you want to sign out globally
+      AccessToken: accessToken, // The access token of the user you want to sign out globally
     };
     return new Promise(async (resolve, reject) => {
-    this.cognito.globalSignOut(params, function(err, data) {
-      if (err) {
-        reject(err); // an error occurred
-      } else {
-        resolve(data); // successful response
-      }
+      this.cognito.globalSignOut(params, function (err, data) {
+        if (err) {
+          reject(err); // an error occurred
+        } else {
+          resolve(data); // successful response
+        }
+      });
     });
-  });
   }
 }
