@@ -14,6 +14,8 @@ import {
   CognitoRefreshToken,
 } from 'amazon-cognito-identity-js';
 
+
+
 import { USER } from './cognito.constants';
 
 @Injectable()
@@ -23,9 +25,14 @@ export class CognitoService {
   private clientId: string;
   private defaultPassword = 'Test1234!';
 
-  constructor(userPoolId: string, clientId: string) {
+  constructor(userPoolId: string, clientId: string,  aws_key: string, aws_secret: string) {
     this.userPoolId = userPoolId;
     this.clientId = clientId;
+    AWS.config.update({
+      region: 'ap-southeast-1', // e.g., 'us-east-1'
+      accessKeyId: aws_key,
+      secretAccessKey: aws_secret
+    });
     this.cognito = new AWS.CognitoIdentityServiceProvider({
       region: 'ap-southeast-1',
     });
