@@ -108,10 +108,13 @@ export class CognitoService {
         Username,
         UserPoolId: this.userPoolId,
       };
+      console.log(addToGroup)
       return this.cognito.adminAddUserToGroup(addToGroup, (err, response) => {
         if(err){
+          console.log(err)
           return reject(err)
         }
+        console.log(response)
         return resolve(response);
       });
     })
