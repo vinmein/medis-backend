@@ -68,27 +68,25 @@ export class CognitoService {
               );
             }
           } else {
-            const addToUserGroup = {
-              GroupName: USER,
-              Username: email,
-              UserPoolId: this.userPoolId,
-            };
-            console.log(addToUserGroup)
-            this.cognito.adminAddUserToGroup(
-              addToUserGroup,
-              (err, response) => {
-                console.log(response);
-              },
-            );
-            const addToGroup = {
-              GroupName: group,
-              Username: email,
-              UserPoolId: this.userPoolId,
-            };
-            console.log(addToGroup)
-            this.cognito.adminAddUserToGroup(addToGroup, (err, response) => {
-              console.log(response);
-            });
+            // const addToUserGroup = {
+            //   GroupName: USER,
+            //   Username: email,
+            //   UserPoolId: this.userPoolId,
+            // };
+            // console.log(addToUserGroup)
+            // this.cognito.adminAddUserToGroup(
+            //   addToUserGroup,
+            //   (err, response) => {
+            //     console.log(response);
+            //   },
+            // );
+            // const addToGroup = {
+            //   GroupName: group,
+            //   Username: email,
+            //   UserPoolId: this.userPoolId,
+            // };
+            // console.log(addToGroup)
+          
             const userObj: CognitoUser = {
               UserConfirmed: response.UserConfirmed,
               UserSub: response.UserSub,
@@ -98,6 +96,25 @@ export class CognitoService {
         },
       );
     });
+  }
+
+  async addGroup(
+    GroupName: string,
+    Username: any,
+  ) {
+    return new Promise(async (resolve, reject) => {
+      const addToGroup = {
+        GroupName,
+        Username,
+        UserPoolId: this.userPoolId,
+      };
+      return this.cognito.adminAddUserToGroup(addToGroup, (err, response) => {
+        if(err){
+          return reject(err)
+        }
+        return resolve(response);
+      });
+    })
   }
 
   async requestOtp(email: string): Promise<any> {

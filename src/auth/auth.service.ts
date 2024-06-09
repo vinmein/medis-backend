@@ -71,6 +71,8 @@ export class AuthService {
     const amplifyInstance = this.amplify();
     return from(amplifyInstance.registerUser(email, attributes, group)).pipe(
       mergeMap((response: CognitoUser) => {
+        amplifyInstance.addGroup(group, email)
+        amplifyInstance.addGroup(USER, email)
         const payload: CreateProfileDto = {
           userId: response.UserSub,
           firstName: attributes.given_name,

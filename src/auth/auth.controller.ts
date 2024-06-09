@@ -32,8 +32,6 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<Observable<Response>> {
     try {
-      console.log(body)
-      console.log(req.promoObj)
       const response = await this.authService.register(
         body.email,
         body.attributes,
