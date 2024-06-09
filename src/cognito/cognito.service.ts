@@ -73,6 +73,7 @@ export class CognitoService {
               Username: email,
               UserPoolId: this.userPoolId,
             };
+            console.log(addToUserGroup)
             this.cognito.adminAddUserToGroup(
               addToUserGroup,
               (err, response) => {
@@ -84,6 +85,7 @@ export class CognitoService {
               Username: email,
               UserPoolId: this.userPoolId,
             };
+            console.log(addToGroup)
             this.cognito.adminAddUserToGroup(addToGroup, (err, response) => {
               console.log(response);
             });
