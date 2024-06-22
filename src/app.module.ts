@@ -27,6 +27,8 @@ import amplifyConfig from 'config/amplify.config';
 import applicationConfig from 'config/app.config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { SubscribeModule } from './subscribe/subscribe.module';
+import { MailchimpModule } from './mailchimp/mailchimp.module';
 
 @Module({
   imports: [
@@ -57,6 +59,8 @@ import { SubscriptionModule } from './subscription/subscription.module';
     PromocodeModule,
     EventEmitterModule.forRoot(),
     SubscriptionModule,
+    SubscribeModule,
+    MailchimpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
