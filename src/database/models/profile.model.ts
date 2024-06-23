@@ -28,6 +28,13 @@ interface PromoObj extends Document{
   readonly promocode: string,
 }
 
+interface Address extends Document{
+  readonly address: string,
+  readonly city: string,
+  readonly state: string,
+  readonly counrty: string,
+}
+
 interface Profile extends Document {
   readonly profileId: string;
   readonly userId: string;
@@ -44,6 +51,7 @@ interface Profile extends Document {
   readonly updatedBy?: Partial<User>;
   readonly reviewRequestId: string;
   readonly status: string;
+  readonly residential?: Address;
 }
 
 type ProfileModel = Model<Profile>;
@@ -104,6 +112,21 @@ const ProfileScheme = new Schema<Profile>(
       promocode: {
         type: String,
       },
+    },
+    residential:{
+      address:{
+        type: String,
+      },
+      state: {
+        type: String,
+      },
+      city: {
+        type: String,
+      },
+      country: {
+        type: String,
+        default: "INDIA"
+      }
     },
     type: {
       type: String,

@@ -80,6 +80,12 @@ export class AuthService {
           emailId: email,
           role: [group, USER],
           type: group,
+          residential: {
+            address :"",
+            state: "",
+            city: "",
+            country: ""
+          },
           dob: '',
           mobileNumber: '',
           promoObj: promoObj,

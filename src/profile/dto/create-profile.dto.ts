@@ -1,6 +1,7 @@
 import { IsEmail, IsNotEmpty, MaxLength, MinLength } from "class-validator";
 import { PromoObjDto } from "./promo-obj.dto";
 import { UserStatus } from "shared/enum/user-status.enum";
+import { AddressDto } from "./address.dto";
 
 export class CreateProfileDto {
   
@@ -29,4 +30,6 @@ export class CreateProfileDto {
     readonly type: string;
 
     status?: UserStatus
+
+    residential?: AddressDto
 }
