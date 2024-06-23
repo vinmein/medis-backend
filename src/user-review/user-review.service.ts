@@ -29,7 +29,8 @@ import { SubscriptionStatus } from 'shared/enum/subscription_status';
 import { SubscriptionDto } from 'account-config/dto/subscription.dto';
 import { CreditsDTO } from 'account-config/dto/credits.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-
+import { GetUserReviewDto } from './dto/get-user-review.dto';
+const _ = require('lodash');
 
 @Injectable()
 export class UserReviewService {
@@ -37,10 +38,10 @@ export class UserReviewService {
     private profileService: ProfileService,
     private accountConfigService: AccountConfigService,
     @Inject(USER_REVIEW_CONFIG_MODEL) private userReviewModel: UserReviewModel,
-    private readonly eventEmitter: EventEmitter2
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  publishEvent<T>(topic:string, data: T) {
+  publishEvent<T>(topic: string, data: T) {
     this.eventEmitter.emit(topic, data);
   }
 
@@ -57,8 +58,40 @@ export class UserReviewService {
     );
   }
 
-  findAll() {
-    return this.userReviewModel.find({});
+  findAll(reviewQueryDto: GetUserReviewDto) {
+    let query = {};
+    if (reviewQueryDto.status) {
+      query = { status: { $in: reviewQueryDto.status.split(',') } };
+    }
+    return from(this.userReviewModel.find(query)).pipe(
+      mergeMap((document) => {
+        if (!document) {
+          throw new BadRequestException(`Failed to fetch applications`);
+        }
+        const users = _.map(document, 'createdBy');
+        return from(
+          this.profileService.findOnebyAnyQuery({ userId: { $in: users } }),
+        ).pipe(
+          map((user) => {
+            if (!user) {
+              throw new NotFoundException(`users was not found`);
+            }
+            const documentsByKey = _.keyBy(document, 'createdBy');
+            const mergedArray = _.compact(
+              _.map(user, (user) => {
+                if (documentsByKey[user.userId]) {
+                  return {...documentsByKey[user.userId].toObject(), user}
+                }
+              }),
+            );
+            return mergedArray;
+          }),
+        );
+      }),
+      catchError((err) => {
+        throw err;
+      }),
+    );
   }
 
   findOne(requestId: string) {
@@ -205,7 +238,7 @@ export class UserReviewService {
     requestId: string,
     updateReviewFeedbackDto: UpdateReviewFeedbackDto,
   ) {
-    this.eventEmitter.emit('USER_REVIEW.APPROVED', { data: "hi" });
+    this.eventEmitter.emit('USER_REVIEW.APPROVED', { data: 'hi' });
     return from(this.userReviewModel.findOne({ requestId })).pipe(
       mergeMap((request) => {
         if (!request) {
@@ -259,9 +292,12 @@ export class UserReviewService {
           }
         }
 
-        const eventObj: UserReviewEventDTO ={ requestId, createdBy: response.user.userId }
-        this.publishEvent('USER_REVIEW.APPROVED', eventObj)
-        
+        const eventObj: UserReviewEventDTO = {
+          requestId,
+          createdBy: response.user.userId,
+        };
+        this.publishEvent('USER_REVIEW.APPROVED', eventObj);
+
         return from(
           this.userReviewModel.updateOne(
             { requestId, createdBy: response.user.userId },

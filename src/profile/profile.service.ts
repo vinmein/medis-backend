@@ -32,6 +32,10 @@ export class ProfileService {
     return this.profileModel.findOne(query);
   }
 
+  findOnebyAnyQuery(query: any) {
+    return this.profileModel.find(query);
+  }
+
   update(id: string, updateProfileDto: UpdateProfileDto) {
     return this.profileModel.updateOne({ _id: id }, { $set: updateProfileDto });
   }

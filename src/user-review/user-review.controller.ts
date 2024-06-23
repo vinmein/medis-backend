@@ -19,6 +19,8 @@ import { HasRoles } from 'auth/guard/has-roles.decorator';
 import { RoleType } from 'shared/enum/role-type.enum';
 import { UpdateReviewFeedbackDto } from './dto/update-review-feedback.dto';
 import { UpdateInReviewDto } from './dto/update-in-review.dto';
+import { query } from 'express';
+import { GetUserReviewDto } from './dto/get-user-review.dto';
 
 @Controller('user-review')
 export class UserReviewController {
@@ -39,8 +41,8 @@ export class UserReviewController {
   @Get()
   @UseGuards(JwtCognitoAuthGuard, RolesGuard)
   @HasRoles(RoleType.ADMIN, RoleType.MODERATOR)
-  findAll() {
-    return this.userReviewService.findAll();
+  findAll(@Query() reviewQueryDto: GetUserReviewDto) {
+    return this.userReviewService.findAll(reviewQueryDto);
   }
 
   @Get(':requestId')
