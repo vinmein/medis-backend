@@ -1,6 +1,17 @@
-import { IsNotEmpty } from "class-validator";
-import { FileDto } from "./file-dto";
+import { Type } from 'class-transformer';
+import { IsOptional, IsPositive, Min } from 'class-validator';
 
 export class GetUserReviewDto {
-    readonly status: string;
+    @IsOptional()
+    status: string;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsPositive()
+    limit: number = 50;
+  
+    @IsOptional()
+    @Type(() => Number)
+    @Min(0)
+    offset: number = 0;
 }

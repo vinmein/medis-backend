@@ -12,7 +12,7 @@ import {
   DEFAULT_CREDITS,
   USER_REVIEW_CONFIG_MODEL,
 } from 'database/database.constants';
-import { EMPTY, from, Observable, of, throwError } from 'rxjs';
+import { EMPTY, forkJoin, from, Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap, throwIfEmpty } from 'rxjs/operators';
 import { MongoServerError } from 'mongodb';
 import { UpdateReviewFeedbackDto } from './dto/update-review-feedback.dto';
@@ -30,6 +30,7 @@ import { SubscriptionDto } from 'account-config/dto/subscription.dto';
 import { CreditsDTO } from 'account-config/dto/credits.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GetUserReviewDto } from './dto/get-user-review.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 const _ = require('lodash');
 
 @Injectable()
@@ -59,15 +60,31 @@ export class UserReviewService {
   }
 
   findAll(reviewQueryDto: GetUserReviewDto) {
+    const { limit =50, offset=0 } = reviewQueryDto;
     let query = {};
     if (reviewQueryDto.status) {
       query = { status: { $in: reviewQueryDto.status.split(',') } };
     }
-    return from(this.userReviewModel.find(query)).pipe(
-      mergeMap((document) => {
+
+    const dataObservable = from(
+      this.userReviewModel
+        .find(query, null, { skip: offset})
+        .sort({ updatedAt: -1 })
+        .limit(limit),
+    );
+    const countObservable = from(this.userReviewModel.countDocuments(query));
+    return forkJoin({ document: dataObservable, count: countObservable }).pipe(
+      mergeMap(({ document, count }) => {
         if (!document) {
           throw new BadRequestException(`Failed to fetch applications`);
         }
+        let pages = 0;
+        if (typeof count === 'number') {
+          // Safe to perform arithmetic operations
+          console.log( limit)
+          pages = Math.ceil(count / limit);
+        }
+
         const users = _.map(document, 'createdBy');
         return from(
           this.profileService.findOnebyAnyQuery({ userId: { $in: users } }),
@@ -80,11 +97,11 @@ export class UserReviewService {
             const mergedArray = _.compact(
               _.map(user, (user) => {
                 if (documentsByKey[user.userId]) {
-                  return {...documentsByKey[user.userId].toObject(), user}
-                }
+                  return { ...documentsByKey[user.userId].toObject(), user };
+                } 
               }),
             );
-            return mergedArray;
+            return { result: mergedArray, total: count, pages: pages };
           }),
         );
       }),

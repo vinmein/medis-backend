@@ -21,6 +21,7 @@ import { UpdateReviewFeedbackDto } from './dto/update-review-feedback.dto';
 import { UpdateInReviewDto } from './dto/update-in-review.dto';
 import { query } from 'express';
 import { GetUserReviewDto } from './dto/get-user-review.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 
 @Controller('user-review')
 export class UserReviewController {
