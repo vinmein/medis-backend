@@ -64,11 +64,7 @@ export class UserReviewController {
       }
       return this.userReviewService.findOnebyQuery(payload);
     }
-    const payload = {
-      ...query,
-      requestId: id
-    }
-    return this.userReviewService.findOnebyQuery(payload);
+    return this.userReviewService.findOne(id);
   }
 
   @Patch(':requestId')

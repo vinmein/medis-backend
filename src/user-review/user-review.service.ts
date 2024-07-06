@@ -112,12 +112,18 @@ export class UserReviewService {
   }
 
   findOne(requestId: string) {
-    return from(this.userReviewModel.findOne({ requestId })).pipe(
-      map((document) => {
+    return from(this.userReviewModel.findOne({requestId: requestId})).pipe(
+      mergeMap((document) => {
         if (!document) {
-          throw new NotFoundException(`${requestId} was not found`);
+          throw new NotFoundException(`Record was not found`);
         }
-        return document;
+        return from(
+          this.profileService.findOnebyQuery({ userId: document.createdBy }),
+        ).pipe(
+          map((user)=>{
+            return {application: document, user};
+          }),
+        );
       }),
       catchError((err) => {
         throw err;
@@ -132,6 +138,7 @@ export class UserReviewService {
         if (!document) {
           throw new NotFoundException(`Record was not found`);
         }
+        
         return document;
       }),
       catchError((err) => {
