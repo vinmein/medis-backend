@@ -170,6 +170,7 @@ export class AuthService {
               const profile = 'profile' in user ? user.profile : {};
               return of({ ...response.AuthenticationResult, ...profile });
             }
+            
             const authResult = 'authResult' in user ? user.authResult : {};
             const idTokenData = jwtDecode(authResult.IdToken);
             const type = 'type' in user? user.type: RoleType.ADMIN;
@@ -269,6 +270,19 @@ export class AuthService {
     idTokenData: any,
     type: RoleType,
   ): CreateProfileDto {
+    if(type == RoleType.ADMIN){
+      return {
+        userId: idTokenData.sub,
+        firstName: RoleType.ADMIN,
+        lastName: RoleType.ADMIN,
+        emailId: idTokenData['email'],
+        role: idTokenData['cognito:groups'],
+        type: type,
+        dob: '',
+        mobileNumber: idTokenData['phone_number'],
+        status: UserStatus.VERIFIEDUSER,
+      };
+    }
     return {
       userId: idTokenData.sub,
       firstName: idTokenData['given_name'],

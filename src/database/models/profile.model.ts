@@ -90,8 +90,8 @@ const ProfileScheme = new Schema<Profile>(
     },
     status:{
       type: String,
-      default: UserStatus.NEWUSER,
-      enum: UserStatus
+      // default: UserStatus.NEWUSER,
+      // enum: UserStatus
     },
     promoObj: {
       rule:{
@@ -143,6 +143,6 @@ const ProfileScheme = new Schema<Profile>(
 
 const createProfileModel: (conn: Connection) => ProfileModel = (
   conn: Connection,
-) => conn.model<Profile>('Profile', ProfileScheme, 'profiles');
+) => conn.model<Profile>('UserProfile', ProfileScheme, 'userProfile');
 
 export { Profile, ProfileModel, createProfileModel };

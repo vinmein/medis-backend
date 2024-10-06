@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 
 @Injectable({
   scope: Scope.TRANSIENT,
@@ -6,14 +6,35 @@ import { Injectable, Scope } from '@nestjs/common';
 export class LoggerService {
   private prefix?: string;
 
-  log(message: string) {
+  log(message: any) {
     let formattedMessage = message;
 
     if (this.prefix) {
       formattedMessage = `[${this.prefix}] ${message}`;
     }
 
-    console.log(formattedMessage);
+    Logger.log(formattedMessage);
+  }
+
+  error(message: any) {
+    let formattedMessage = message;
+
+    if (this.prefix) {
+      formattedMessage = `[${this.prefix}] ${message}`;
+    }
+
+    Logger.error(formattedMessage);
+  }
+
+
+  debug(message: string) {
+    let formattedMessage = message;
+
+    if (this.prefix) {
+      formattedMessage = `[${this.prefix}] ${message}`;
+    }
+
+    Logger.debug(formattedMessage);
   }
 
   setPrefix(prefix: string) {

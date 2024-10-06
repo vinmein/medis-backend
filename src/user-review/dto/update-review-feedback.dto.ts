@@ -14,7 +14,7 @@ export class UpdateReviewFeedbackDto extends PartialType(CreateUserReviewDto) {
     reviewedBy: string;
 
     @IsNotEmpty()
-    readonly status: Status;
+     status: Status;
 
     additionalCoins?: number;
 

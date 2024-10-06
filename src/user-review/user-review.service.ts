@@ -3,6 +3,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserReviewDto } from './dto/create-user-review.dto';
@@ -31,6 +32,7 @@ import { CreditsDTO } from 'account-config/dto/credits.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GetUserReviewDto } from './dto/get-user-review.dto';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
+import { LoggerService } from 'logger/logger.service';
 const _ = require('lodash');
 
 @Injectable()
@@ -262,13 +264,13 @@ export class UserReviewService {
     requestId: string,
     updateReviewFeedbackDto: UpdateReviewFeedbackDto,
   ) {
-    this.eventEmitter.emit('USER_REVIEW.APPROVED', { data: 'hi' });
+    // this.eventEmitter.emit('USER_REVIEW.APPROVED', { data: 'hi' });
     return from(this.userReviewModel.findOne({ requestId })).pipe(
       mergeMap((request) => {
         if (!request) {
           throw new NotFoundException(`Post:${requestId} was not found`);
         }
-        if (request.status === Status.PENDING) {
+        if (request.status == Status.PENDING) {
           const queryProfileDto = new QueryProfileDto();
           queryProfileDto.userId = request.createdBy;
           return from(this.profileService.findOnebyQuery(queryProfileDto)).pipe(
@@ -276,6 +278,13 @@ export class UserReviewService {
               if (!user) {
                 throw new NotFoundException(`user was not found`);
               }
+              if (updateReviewFeedbackDto.status == Status.APPROVED) {
+                const updateProfileDto = new UpdateProfileDto();
+                updateProfileDto.status = UserStatus.VERIFIEDUSER;
+                updateProfileDto.mobileNumber = request.mobileNumber;
+                this.publishEvent('PROFILE.STATUS.UPDATE', {user: user, query: queryProfileDto, update: updateProfileDto});
+              }
+
               // Combine the 'document' and 'request' into a single object
               return { user, request };
             }),
@@ -285,14 +294,8 @@ export class UserReviewService {
         }
       }),
       mergeMap((response) => {
-        if (updateReviewFeedbackDto.status === 'APPROVED') {
+        if (updateReviewFeedbackDto.status == Status.APPROVED) {
           const currentUserStatus = response.user.status;
-          const updateProfileDto = new UpdateProfileDto();
-          updateProfileDto.status = UserStatus.VERIFIEDUSER;
-          updateProfileDto.mobileNumber = response.request.mobileNumber;
-          const queryProfileDto = new QueryProfileDto();
-          queryProfileDto.userId = response.user.userId;
-          this.profileService.updateByQuery(queryProfileDto, updateProfileDto);
           if (
             currentUserStatus == UserStatus.NEWUSER &&
             [UserType.DOCTOR, UserType.HR, UserType.NURSE].indexOf(
