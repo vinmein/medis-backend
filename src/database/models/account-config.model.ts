@@ -47,7 +47,7 @@ const AccountConfigScheme = new Schema<AccountConfig>(
     configId: {
       type: String,
       required: true,
-      default: createId(),
+      default: () => createId()
     },
     userId: {
       type: String,

@@ -61,7 +61,7 @@ const ProfileScheme = new Schema<Profile>(
     profileId: {
       type: String,
       required: true,
-      default:  createId()
+      default: () => createId()
     },
     userId: {
       type: String,

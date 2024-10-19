@@ -34,7 +34,7 @@ const QualificationSchema = new Schema<Qualification>(
     qualificationId: {
       type: String,
       required: true,
-      default:  createId()
+      default: () => createId()
     },
     userId: {
       type: String,
