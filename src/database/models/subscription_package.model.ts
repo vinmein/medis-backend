@@ -51,7 +51,7 @@ const SubscriptionPackageScheme = new Schema<SubscriptionPackage>(
     packageId: {
       type: String,
       required: true,
-      default: createId(),
+      default: () => createId()
     },
     packageCode:{
       type: String,

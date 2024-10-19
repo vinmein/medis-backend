@@ -37,7 +37,7 @@ const StorageSchema = new Schema<Storage>(
     storageId: {
       type: String,
       required: true,
-      default:  createId()
+      default: () => createId()
     },
     createdBy: {
       type: String,

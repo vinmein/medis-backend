@@ -35,7 +35,7 @@ const JobApplicationScheme = new Schema<JobApplication>(
     jobApplicationId: {
       type: String,
       required: true,
-      default: createId(),
+      default: () => createId()
     },
     applicantId: {
       type: String,

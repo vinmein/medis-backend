@@ -46,7 +46,7 @@ const PromocodeScheme = new Schema<Promocode>(
     promocodeId: {
       type: String,
       required: true,
-      default: createId(),
+      default: () => createId()
     },
     promocode: {
       type: String,

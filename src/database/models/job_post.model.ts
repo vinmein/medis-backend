@@ -70,7 +70,7 @@ const JobPostScheme = new Schema<JobPost>(
     jobPostId: {
       type: String,
       required: true,
-      default: createId(),
+      default: () => createId()
     },
     createdBy: {
       type: String,
